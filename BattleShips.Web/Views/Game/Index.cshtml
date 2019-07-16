@@ -1,32 +1,42 @@
-﻿
-@{
+﻿@{
     ViewData["Title"] = "Welcome";
 }
 
 
-<h1>Welcome to Battleships game!</h1>
-<h2>Please put all your ships on board below</h2>
+<div class="page-header">
+    <h2>Welcome to Battleships game!</h2>
+    <p>Please place all your ships on board below</p>
+</div>
 
-<div class="well well-lg">
-    <table>
-        @for (int row = 0; row < (int)ViewData["RowsNumber"]; row++)
-        {
+<div class="well well-lg col-md-12">
+    <div class="col-md-6">
+        <table>
+            @for (int row = 0; row < (int)ViewData["RowsNumber"]; row++)
+            {
             <tr>
                 @for (int col = 0; col < (int)ViewData["ColumnsNumber"]; col++)
                 {
-                    <td>
-                        <div class="board-cell">
-                            <label class="lbl-check">
-                                <button type="button" class="btn btn-check" />
-                                <input type="checkbox" class="cbx-check hidden" autocomplete="off" />
-                            </label>
-                        </div>
-                    </td>
+                <td>
+                    <div class="board-cell">
+                        <label class="lbl-check">
+                            <button type="button" class="btn btn-check" />
+                            <input type="checkbox" class="cbx-check hidden" autocomplete="off" />
+                        </label>
+                    </div>
+                </td>
                 }
             </tr>
-        }
-    </table>
+            }
+        </table>
+    </div>
+    <div class="col-md-6">
+        <p>Place your ships in straight line:</p>
+        <ul>
+            <li>1x Battleship (5 squares)</li>
+            <li>2x Destroyers (4 squares)</li>
+        </ul>
+    </div>
 </div>
 
-<button type="submit">Start</button>
-<button type="reset">Clear</button>
+<button type="submit" class="btn btn-primary">Start</button>
+<button type="reset" class="btn btn-primary">Clear</button>
