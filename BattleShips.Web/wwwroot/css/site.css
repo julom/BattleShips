@@ -7,6 +7,26 @@ a.navbar-brand {
   word-break: break-all;
 }
 
+/* Board checkers
+-------------------------------------------------- */
+.board-cell {
+    margin: 5px;
+    height: 30px;
+    width: 30px;
+}
+
+.btn-check {
+    background-color: white;
+    height: 30px;
+    width: 30px;
+    background-color: lightblue;
+}
+
+.check {
+    opacity: 0.5;
+    background-color: black;
+}
+
 /* Sticky footer styles
 -------------------------------------------------- */
 html {

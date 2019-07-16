@@ -1,0 +1,32 @@
+﻿
+@{
+    ViewData["Title"] = "Welcome";
+}
+
+
+<h1>Welcome to Battleships game!</h1>
+<h2>Please put all your ships on board below</h2>
+
+<div class="well well-lg">
+    <table>
+        @for (int row = 0; row < (int)ViewData["RowsNumber"]; row++)
+        {
+            <tr>
+                @for (int col = 0; col < (int)ViewData["ColumnsNumber"]; col++)
+                {
+                    <td>
+                        <div class="board-cell">
+                            <label class="lbl-check">
+                                <button type="button" class="btn btn-check" />
+                                <input type="checkbox" class="cbx-check hidden" autocomplete="off" />
+                            </label>
+                        </div>
+                    </td>
+                }
+            </tr>
+        }
+    </table>
+</div>
+
+<button type="submit">Start</button>
+<button type="reset">Clear</button>
