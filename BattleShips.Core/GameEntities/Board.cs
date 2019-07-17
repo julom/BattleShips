@@ -8,12 +8,22 @@ namespace BattleShips.Core
 
         public IField[,] Fields { get; private set; }
 
-        public Board()
+        public Board(IField[,] fields)
         {
-
+            Fields = fields;
         }
 
-        public void RandomizeFields()
+        public void RandomizeShipsPositions()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public void DefineShipsPositions()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public bool Shoot(int positionX, int positionY)
         {
             throw new System.NotImplementedException();
         }

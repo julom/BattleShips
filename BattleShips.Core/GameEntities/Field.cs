@@ -12,7 +12,7 @@ namespace BattleShips.Core
             FieldType = fieldType;
         }
 
-        public void Hit(bool success)
+        public void Shoot(bool success)
         {
             throw new NotImplementedException();
         }

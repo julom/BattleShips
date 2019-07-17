@@ -10,6 +10,6 @@ namespace BattleShips.Core.Abstract
         IField[,] Cooridnates { get; }
         bool IsSunk { get; }
 
-        void HitSegment(int x, int y);
+        void HitSegment(int positionX, int positionY);
     }
 }

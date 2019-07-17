@@ -20,7 +20,7 @@ namespace BattleShips.Core
             Cooridnates = coordinates;
         }
 
-        public void HitSegment(int x, int y)
+        public void HitSegment(int positionX, int positionY)
         {
             throw new System.NotImplementedException();
         }

@@ -5,6 +5,8 @@
         IShip[] Ships { get; }
         IField[,] Fields { get; }
 
-        void RandomizeFields();
+        void RandomizeShipsPositions();
+        void DefineShipsPositions();
+        bool Shoot(int positionX, int positionY);
     }
 }
