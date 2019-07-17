@@ -1,6 +1,6 @@
-﻿using BattleShips.Core.Abstract;
+﻿using BattleShips.Core.GameEntities.Abstract;
 
-namespace BattleShips.Core
+namespace BattleShips.Core.GameEntities
 {
     class Board : IBoard
     {

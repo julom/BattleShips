@@ -1,9 +1,9 @@
-﻿using BattleShips.Core.Abstract;
+﻿using BattleShips.Core.GameEntities.Abstract;
 using System;
 
-namespace BattleShips.Core
+namespace BattleShips.Core.GameEntities
 {
-    class Field : IField
+    public class Field : IField
     {
         public FieldTypeEnum FieldType { get; private set; }
 

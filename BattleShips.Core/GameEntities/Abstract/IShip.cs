@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace BattleShips.Core.Abstract
+namespace BattleShips.Core.GameEntities.Abstract
 {
     public interface IShip
     {

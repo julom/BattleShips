@@ -1,4 +1,4 @@
-﻿namespace BattleShips.Core.Abstract
+﻿namespace BattleShips.Core.GameEntities.Abstract
 {
     public enum FieldTypeEnum
     {
