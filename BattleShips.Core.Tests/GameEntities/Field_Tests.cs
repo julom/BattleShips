@@ -68,5 +68,15 @@ namespace BattleShips.Core.Tests.GameEntities
 
             Assert.Throws<GameLogicalException>(action);
         }
+
+        [Test]
+        public void Shoot_NotExpectedFieldType_ThrowsException([Values(-1)] FieldTypeEnum fieldType)
+        {
+            _field = new Field(fieldType);
+
+            TestDelegate action = () => _field.Shoot();
+
+            Assert.Throws<GameArgumentException>(action);
+        }
     }
 }
