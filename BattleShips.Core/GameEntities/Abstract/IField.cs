@@ -4,6 +4,6 @@
     {
         FieldTypeEnum FieldType { get; }
 
-        void Shoot(bool success);  
+        bool Shoot();  
     }
 }

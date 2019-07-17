@@ -12,7 +12,7 @@ namespace BattleShips.Core.GameEntities
             FieldType = fieldType;
         }
 
-        public void Shoot(bool success)
+        public bool Shoot()
         {
             throw new NotImplementedException();
         }
