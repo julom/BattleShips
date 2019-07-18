@@ -1,8 +1,9 @@
 ﻿using BattleShips.Core.GameEntities.Abstract;
+using System.Collections.Generic;
 
 namespace BattleShips.Core.GameEntities
 {
-    class Ship : IShip
+    public class Ship : IShip
     {
         public int Size { get; private set; }
         public IField[,] Cooridnates { get; private set; }
@@ -15,12 +16,12 @@ namespace BattleShips.Core.GameEntities
             }
         }
 
-        public Ship(IField[,] coordinates)
+        public Ship(IList<KeyValuePair<int,int>> coordinates)
         {
-            Cooridnates = coordinates;
+            
         }
 
-        public void HitSegment(int positionX, int positionY)
+        public void TryToShoot(int positionX, int positionY)
         {
             throw new System.NotImplementedException();
         }
