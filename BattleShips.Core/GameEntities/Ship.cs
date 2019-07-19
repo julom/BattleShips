@@ -6,7 +6,7 @@ namespace BattleShips.Core.GameEntities
     public class Ship : IShip
     {
         public int Size { get; private set; }
-        public IField[,] Cooridnates { get; private set; }
+        public IList<IFieldPositionWrapper> Cooridnates { get; private set; }
 
         public bool IsSunk
         {
@@ -16,12 +16,12 @@ namespace BattleShips.Core.GameEntities
             }
         }
 
-        public Ship(IList<KeyValuePair<int,int>> coordinates)
+        public Ship(IList<KeyValuePair<int, int>> coordinates)
         {
             
         }
 
-        public void TryToShoot(int positionX, int positionY)
+        public bool TryToShoot(int positionX, int positionY)
         {
             throw new System.NotImplementedException();
         }
