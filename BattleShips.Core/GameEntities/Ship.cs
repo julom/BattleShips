@@ -1,5 +1,7 @@
 ﻿using BattleShips.Core.GameEntities.Abstract;
 using System.Collections.Generic;
+using System.Linq;
+using BattleShips.Core.Exceptions;
 
 namespace BattleShips.Core.GameEntities
 {
@@ -10,20 +12,30 @@ namespace BattleShips.Core.GameEntities
 
         public bool IsSunk
         {
-            get
-            {
-                throw new System.NotImplementedException();
-            }
+            get { return Cooridnates.All(x => x.Field.FieldType == FieldTypeEnum.ShipHit); }
         }
 
         public Ship(IList<KeyValuePair<int, int>> coordinates)
         {
-            
+            Cooridnates = GetCoordinates(coordinates);
+            Size = Cooridnates.Count;
+        }
+
+        private static List<IFieldPositionWrapper> GetCoordinates(IList<KeyValuePair<int, int>> coordinates)
+        {
+            return coordinates.Select(x =>
+                    (IFieldPositionWrapper) new FieldPositionWrapper(new Field(FieldTypeEnum.Ship), x.Key, x.Value))
+                .ToList();
         }
 
         public bool TryToShoot(int positionX, int positionY)
         {
-            throw new System.NotImplementedException();
+            var fieldToShoot = Cooridnates.FirstOrDefault(x => x.PositionX == positionX && x.PositionY == positionY);
+            if (fieldToShoot != null)
+            {
+                return fieldToShoot.Field.Shoot();
+            }
+            return false;
         }
     }
 }

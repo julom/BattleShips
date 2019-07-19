@@ -95,6 +95,7 @@ namespace BattleShips.Core.Tests.GameEntities
         }
 
         [Test]
+        [TestCaseSource(nameof(ProperCoordinates))]
         public void IsSunk_HasAtLeastOneSegmentSaved_ReturnsFalse(IList<KeyValuePair<int, int>> shipFields)
         {
             _ship = new Ship(shipFields);
@@ -116,8 +117,7 @@ namespace BattleShips.Core.Tests.GameEntities
 
             _ship.TryToShoot(shootCoordinates.First().Key, shootCoordinates.First().Value);
 
-            Assert.AreEqual(FieldTypeEnum.ShipHit,
-                _ship.Cooridnates.Single(x => x.Field.FieldType == FieldTypeEnum.ShipHit),
+            Assert.IsNotNull(_ship.Cooridnates.Single(x => x.Field.FieldType == FieldTypeEnum.ShipHit),
                 "Field occupied by ship that is shot should change status to hit");
         }
 
