@@ -7,6 +7,6 @@ namespace BattleShips.Core
         public const int BoardSizeX = 10;
         public const int BoardSizeY = 10;
 
-        public static readonly IList<int> ShipSizes = new List<int> {4, 5, 5};
+        public static IList<int> ShipSizes = new List<int> {4, 5, 5};
     }
 }

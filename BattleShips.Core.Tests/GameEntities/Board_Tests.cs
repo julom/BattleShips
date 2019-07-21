@@ -28,6 +28,11 @@ namespace BattleShips.Core.Tests.GameEntities
             });
         }
 
+        [OneTimeSetUp]
+        public void InitializeGameSettings()
+        {
+            GameSettings.ShipSizes = new List<int> { 2 };
+        }
 
         [Test]
         [TestCaseSource(nameof(FieldCoordinates))]
@@ -35,6 +40,7 @@ namespace BattleShips.Core.Tests.GameEntities
         {
             board = new Board(fields);
 
+            Assert.IsNotNull(board.Fields);
             Assert.IsNotEmpty(board.Fields);
         }
 
