@@ -1,24 +1,25 @@
 ﻿using BattleShips.Core.GameEntities.Abstract;
+using System.Collections.Generic;
 
 namespace BattleShips.Core.GameEntities
 {
-    class Board : IBoard
+    public class Board : IBoard
     {
         public IShip[] Ships { get; private set; }
 
         public IField[,] Fields { get; private set; }
 
-        public Board(IField[,] fields)
+        public Board(bool[,] fields)
         {
-            Fields = fields;
+            DefineShipsPositions(fields);
         }
 
-        public void RandomizeShipsPositions()
+        public void RandomizeShipsPositions(IList<int> shipSizes)
         {
             throw new System.NotImplementedException();
         }
 
-        public void DefineShipsPositions()
+        public IShip[] DefineShipsPositions(bool[,] fields)
         {
             throw new System.NotImplementedException();
         }
