@@ -12,6 +12,8 @@ namespace BattleShips.Core.GameEntities
 
         public IField[,] Fields { get; private set; }
 
+        public bool AreAllShipsSunk { get; private set; }
+
         public Board(bool[,] fields)
         {
             Ships = DefineShipsPositions(fields);

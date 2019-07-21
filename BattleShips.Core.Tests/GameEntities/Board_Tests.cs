@@ -45,6 +45,24 @@ namespace BattleShips.Core.Tests.GameEntities
 
         [Test]
         [TestCaseSource(nameof(FieldCoordinates))]
+        public void AreAllShipsSunk_AllShipsSunk_ReturnsTrue(bool[,] fields)
+        {
+            board = new Board(fields);
+
+            Assert.IsTrue(board.AreAllShipsSunk);
+        }
+
+        [Test]
+        [TestCaseSource(nameof(FieldCoordinates))]
+        public void AreAllShipsSunk_NoShipsSunk_ReturnsFalse(bool[,] fields)
+        {
+            board = new Board(fields);
+
+            Assert.IsFalse(board.AreAllShipsSunk);
+        }
+
+        [Test]
+        [TestCaseSource(nameof(FieldCoordinates))]
         public void DefineShipsPositions_PopulatesShips(bool[,] fields)
         {
             board = new Board(fields);

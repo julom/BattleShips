@@ -6,6 +6,7 @@ namespace BattleShips.Core.GameEntities.Abstract
     {
         IShip[] Ships { get; }
         IField[,] Fields { get; }
+        bool AreAllShipsSunk { get; }
 
         void RandomizeShipsPositions(IList<int> shipSizes);
         IShip[] DefineShipsPositions(bool[,] fields);
