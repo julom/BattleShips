@@ -7,6 +7,7 @@ using System.Linq;
 
 namespace BattleShips.Core.Tests.GameEntities
 {
+    [TestFixture]
     public class ShipCoordinatesValidator_Test
     {
         ShipCoordinatesValidator validator = new ShipCoordinatesValidator();
