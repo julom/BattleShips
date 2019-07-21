@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using BattleShips.Core.Exceptions;
+using BattleShips.Core.GameEntities.Enums;
 
 namespace BattleShips.Core.GameEntities
 {
@@ -9,11 +10,11 @@ namespace BattleShips.Core.GameEntities
     {
         private readonly IShipCoordinatesValidator coordinatesValidator;
         public int Size { get; private set; }
-        public IList<IFieldPositionWrapper> Coordinates { get; private set; }
+        public IList<IField> Coordinates { get; private set; }
 
         public bool IsSunk
         {
-            get { return Coordinates.All(x => x.Field.FieldType == FieldTypeEnum.ShipHit); }
+            get { return Coordinates.All(x => x.FieldType == FieldTypes.ShipHit); }
         }
 
         public Ship(IList<KeyValuePair<int, int>> coordinates, IShipCoordinatesValidator coordinatesValidator = null)
@@ -23,12 +24,12 @@ namespace BattleShips.Core.GameEntities
             Coordinates = GetCoordinates(coordinates);
         }
 
-        private List<IFieldPositionWrapper> GetCoordinates(IList<KeyValuePair<int, int>> coordinates)
+        private List<IField> GetCoordinates(IList<KeyValuePair<int, int>> coordinates)
         {
             if (coordinatesValidator.Validate(coordinates))
             {
                 return coordinates.Select(x =>
-                        (IFieldPositionWrapper)new FieldPositionWrapper(new Field(FieldTypeEnum.Ship), x.Key, x.Value))
+                        (IField)new Field(FieldTypes.Ship, x.Key, x.Value))
                     .ToList();
             }
             throw new GameArgumentException("Wrong ship coordinates");
@@ -39,7 +40,7 @@ namespace BattleShips.Core.GameEntities
             var fieldToShoot = Coordinates.FirstOrDefault(x => x.PositionX == positionX && x.PositionY == positionY);
             if (fieldToShoot != null)
             {
-                return fieldToShoot.Field.Shoot();
+                return fieldToShoot.Shoot();
             }
             return false;
         }

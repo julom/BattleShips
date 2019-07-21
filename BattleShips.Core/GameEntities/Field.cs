@@ -1,34 +1,41 @@
 ﻿using BattleShips.Core.Exceptions;
 using BattleShips.Core.GameEntities.Abstract;
+using BattleShips.Core.GameEntities.Enums;
 using System;
 
 namespace BattleShips.Core.GameEntities
 {
     public class Field : IField
     {
-        public FieldTypeEnum FieldType { get; private set; }
+        public int PositionX { get; }
 
-        public Field(FieldTypeEnum fieldType)
+        public int PositionY { get; }
+
+        public FieldTypes FieldType { get; private set; }
+
+        public Field(FieldTypes fieldType, int positionX, int positionY)
         {
             FieldType = fieldType;
+            PositionX = positionX;
+            PositionY = positionY;
         }
 
         public bool Shoot()
         {
-            if (FieldType == FieldTypeEnum.MissedShot || FieldType == FieldTypeEnum.ShipHit)
+            if (FieldType == FieldTypes.MissedShot || FieldType == FieldTypes.ShipHit)
             {
                 throw new GameLogicalException("Field has been already shot");
             }
 
-            if (FieldType == FieldTypeEnum.Empty)
+            if (FieldType == FieldTypes.Empty)
             {
-                FieldType = FieldTypeEnum.MissedShot;
+                FieldType = FieldTypes.MissedShot;
                 return false;
             }
 
-            if (FieldType == FieldTypeEnum.Ship)
+            if (FieldType == FieldTypes.Ship)
             {
-                FieldType = FieldTypeEnum.ShipHit;
+                FieldType = FieldTypes.ShipHit;
                 return true;
             }
 

@@ -1,6 +1,7 @@
 ﻿using BattleShips.Core.Exceptions;
 using BattleShips.Core.GameEntities;
 using BattleShips.Core.GameEntities.Abstract;
+using BattleShips.Core.GameEntities.Enums;
 using NUnit.Framework;
 using System;
 
@@ -12,9 +13,9 @@ namespace BattleShips.Core.Tests.GameEntities
         Field _field;
 
         [Test]
-        public void Field_FieldTypeIsSet([Values] FieldTypeEnum fieldType)
+        public void Field_FieldTypeIsSet([Values] FieldTypes fieldType)
         {
-            _field = new Field(fieldType);
+            _field = new Field(fieldType, 0, 0);
 
             Assert.AreEqual(fieldType, _field.FieldType);
         }
@@ -22,7 +23,7 @@ namespace BattleShips.Core.Tests.GameEntities
         [Test]
         public void Shoot_ShootEmptyField_ReturnsFalse()
         {
-            _field = new Field(FieldTypeEnum.Empty);
+            _field = new Field(FieldTypes.Empty, 0, 0);
 
             var result = _field.Shoot();
 
@@ -32,7 +33,7 @@ namespace BattleShips.Core.Tests.GameEntities
         [Test]
         public void Shoot_ShootShipField_ReturnsTrue()
         {
-            _field = new Field(FieldTypeEnum.Ship);
+            _field = new Field(FieldTypes.Ship, 0, 0);
 
             var result = _field.Shoot();
 
@@ -42,27 +43,27 @@ namespace BattleShips.Core.Tests.GameEntities
         [Test]
         public void Shoot_ShootEmptyField_ChangesFieldTypeToMissedShot()
         {
-            _field = new Field(FieldTypeEnum.Empty);
+            _field = new Field(FieldTypes.Empty, 0, 0);
 
             _field.Shoot();
 
-            Assert.AreEqual(FieldTypeEnum.MissedShot, _field.FieldType);
+            Assert.AreEqual(FieldTypes.MissedShot, _field.FieldType);
         }
 
         [Test]
         public void Shoot_ShootShipField_ChangesFieldTypeToShipHit()
         {
-            _field = new Field(FieldTypeEnum.Ship);
+            _field = new Field(FieldTypes.Ship, 0, 0);
 
             _field.Shoot();
 
-            Assert.AreEqual(FieldTypeEnum.ShipHit, _field.FieldType);
+            Assert.AreEqual(FieldTypes.ShipHit, _field.FieldType);
         }
 
         [Test]
-        public void Shoot_AlreadyShotField_ThrowsException([Values (FieldTypeEnum.MissedShot, FieldTypeEnum.ShipHit)] FieldTypeEnum fieldType)
+        public void Shoot_AlreadyShotField_ThrowsException([Values (FieldTypes.MissedShot, FieldTypes.ShipHit)] FieldTypes fieldType)
         {
-            _field = new Field(fieldType);
+            _field = new Field(fieldType, 0, 0);
 
             TestDelegate action = () => _field.Shoot();
 
@@ -70,9 +71,9 @@ namespace BattleShips.Core.Tests.GameEntities
         }
 
         [Test]
-        public void Shoot_NotExpectedFieldType_ThrowsException([Values(-1)] FieldTypeEnum fieldType)
+        public void Shoot_NotExpectedFieldType_ThrowsException([Values(-1)] FieldTypes fieldType)
         {
-            _field = new Field(fieldType);
+            _field = new Field(fieldType, 0, 0);
 
             TestDelegate action = () => _field.Shoot();
 

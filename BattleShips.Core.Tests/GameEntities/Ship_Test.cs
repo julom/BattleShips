@@ -6,6 +6,7 @@ using BattleShips.Core.Exceptions;
 using BattleShips.Core.GameEntities.Abstract;
 using Moq;
 using BattleShips.Core.Utils;
+using BattleShips.Core.GameEntities.Enums;
 
 namespace BattleShips.Core.Tests.GameEntities
 {
@@ -94,7 +95,7 @@ namespace BattleShips.Core.Tests.GameEntities
 
             _ship.TryToShoot(shootCoordinates.First().Key, shootCoordinates.First().Value);
 
-            Assert.IsNotNull(_ship.Coordinates.Single(x => x.Field.FieldType == FieldTypeEnum.ShipHit),
+            Assert.IsNotNull(_ship.Coordinates.Single(x => x.FieldType == FieldTypes.ShipHit),
                 "Field occupied by ship that is shot should change status to hit");
         }
 
@@ -119,7 +120,7 @@ namespace BattleShips.Core.Tests.GameEntities
 
             _ship.TryToShoot(shootCoordinates.First().Key, shootCoordinates.First().Value);
 
-            Assert.IsTrue(_ship.Coordinates.All(x => x.Field.FieldType == FieldTypeEnum.Ship),
+            Assert.IsTrue(_ship.Coordinates.All(x => x.FieldType == FieldTypes.Ship),
                 "Field that is not shot should not change status");
         }
 

@@ -1,5 +1,6 @@
 ﻿using BattleShips.Core.GameEntities;
 using BattleShips.Core.GameEntities.Abstract;
+using BattleShips.Core.GameEntities.Enums;
 using Moq;
 using NUnit.Framework;
 using System;
@@ -31,6 +32,8 @@ namespace BattleShips.Core.Tests.GameEntities
         public void InitializeGameSettings()
         {
             GameSettings.ShipSizes = new List<int> { 2 };
+            GameSettings.BoardSizeX = 3;
+            GameSettings.BoardSizeY = 3;
         }
 
         [Test]
@@ -49,6 +52,11 @@ namespace BattleShips.Core.Tests.GameEntities
         {
             board = new Board(fields);
 
+            board.Shoot(1, 1);
+            board.Shoot(1, 2);
+            board.Shoot(2, 1);
+            board.Shoot(2, 2);
+
             Assert.IsTrue(board.AreAllShipsSunk);
         }
 
@@ -57,6 +65,8 @@ namespace BattleShips.Core.Tests.GameEntities
         public void AreAllShipsSunk_NoShipsSunk_ReturnsFalse(bool[,] fields)
         {
             board = new Board(fields);
+
+            board.Shoot(1, 1);
 
             Assert.IsFalse(board.AreAllShipsSunk);
         }
@@ -73,8 +83,8 @@ namespace BattleShips.Core.Tests.GameEntities
         }
 
         [Test]
-        [TestCaseSource(nameof(FieldCoordinates))]
-        public void RandomizeShipsPositions_PopulatesShips(bool[,] fields)
+        [Repeat(10)]
+        public void RandomizeShipsPositions_PopulatesShips()
         {
             board = new Board();
 
@@ -104,7 +114,7 @@ namespace BattleShips.Core.Tests.GameEntities
 
             var result = board.Shoot(positionX, positionY);
 
-            Assert.AreEqual(FieldTypeEnum.ShipHit, board.Fields[positionX,positionY].FieldType);
+            Assert.AreEqual(FieldTypes.ShipHit, board.Fields[positionX,positionY].FieldType);
         }
 
         [Test]
@@ -130,7 +140,7 @@ namespace BattleShips.Core.Tests.GameEntities
 
             var result = board.Shoot(positionX, positionY);
 
-            Assert.AreEqual(FieldTypeEnum.MissedShot, board.Fields[positionX, positionY].FieldType);
+            Assert.AreEqual(FieldTypes.MissedShot, board.Fields[positionX, positionY].FieldType);
         }
     }
 }

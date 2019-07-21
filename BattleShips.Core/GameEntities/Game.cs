@@ -1,5 +1,6 @@
 ﻿using BattleShips.Core.GameEntities.Abstract;
 using BattleShips.Core.GameEntities.DifficultyLevels.Abstract;
+using BattleShips.Core.GameEntities.Factories.Abstract;
 
 namespace BattleShips.Core.GameEntities
 {
@@ -7,25 +8,40 @@ namespace BattleShips.Core.GameEntities
     {
         private readonly IDifficultyLevel difficulty;
 
-        public Board[] Boards => throw new System.NotImplementedException();
+        public IBoard PlayerBoard { get; private set; }
 
-        public bool IsWon => throw new System.NotImplementedException();
+        public IBoard ComputerBoard { get; private set; }
 
-        public bool IsLost => throw new System.NotImplementedException();
-
-        public Game(IDifficultyLevel difficulty)
+        public bool IsWon
         {
-
+            get { return ComputerBoard.AreAllShipsSunk; }
         }
 
-        public IField[,] MakeComputerMovement()
+        public bool IsLost
         {
-            throw new System.NotImplementedException();
+            get { return PlayerBoard.AreAllShipsSunk; }
         }
 
-        public IField[,] MakePlayerMovement(int shotPositionX, int shotPositionY)
+
+        public Game(IBoardFactory boardFactory, IDifficultyLevel difficulty)
         {
-            throw new System.NotImplementedException();
+            PlayerBoard = boardFactory.CreateBoard();
+            ComputerBoard = boardFactory.CreateBoard();
+            this.difficulty = difficulty;
+        }
+
+        public ShootResultDTO MakeComputerMovement()
+        {
+            var shotCoordinates = difficulty.ChooseShotCoordinates(PlayerBoard);
+
+            var result = PlayerBoard.Shoot(shotCoordinates.Key, shotCoordinates.Value);
+            return result;
+        }
+
+        public ShootResultDTO MakePlayerMovement(int shotPositionX, int shotPositionY)
+        {
+            var result = ComputerBoard.Shoot(shotPositionX, shotPositionY);
+            return result;
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using BattleShips.Core.Exceptions;
 using BattleShips.Core.GameEntities.Abstract;
+using BattleShips.Core.GameEntities.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +13,13 @@ namespace BattleShips.Core.GameEntities
 
         public IField[,] Fields { get; private set; }
 
-        public bool AreAllShipsSunk { get; private set; }
+        public bool AreAllShipsSunk
+        {
+            get
+            {
+                return Ships.All(x => x.IsSunk);
+            }
+        }
 
         public Board(bool[,] fields)
         {
@@ -28,13 +35,13 @@ namespace BattleShips.Core.GameEntities
 
         private IField[,] FillTheFields(IShip[] ships)
         {
-            IField[,] outputFields = new Field[10, 10];
+            IField[,] outputFields = new Field[GameSettings.BoardSizeX, GameSettings.BoardSizeY];
 
             foreach (var ship in ships)
             {
                 foreach (var shipSegment in ship.Coordinates)
                 {
-                    outputFields[shipSegment.PositionX, shipSegment.PositionY] = new Field(FieldTypeEnum.Ship);
+                    outputFields[shipSegment.PositionX, shipSegment.PositionY] = new Field(FieldTypes.Ship, shipSegment.PositionX, shipSegment.PositionY);
                 }
             }
             
@@ -44,7 +51,7 @@ namespace BattleShips.Core.GameEntities
                 {
                     if (outputFields[row, col] == null)
                     {
-                        outputFields[row, col] = new Field(FieldTypeEnum.Empty);
+                        outputFields[row, col] = new Field(FieldTypes.Empty, row, col);
                     }
                 }
             }
@@ -184,7 +191,7 @@ namespace BattleShips.Core.GameEntities
         public ShootResultDTO Shoot(int positionX, int positionY)
         {
             ShootResultDTO result = new ShootResultDTO();
-            var hit = Fields[positionY, positionX].Shoot();
+            var hit = Fields[positionX, positionY].Shoot();
             if (hit)
             {
                 IShip shipHit = Ships.SingleOrDefault(x => x.TryToShoot(positionX, positionY));
