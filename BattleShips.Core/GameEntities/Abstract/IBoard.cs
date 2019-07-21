@@ -9,6 +9,6 @@ namespace BattleShips.Core.GameEntities.Abstract
 
         void RandomizeShipsPositions(IList<int> shipSizes);
         IShip[] DefineShipsPositions(bool[,] fields);
-        bool Shoot(int positionX, int positionY);
+        ShootResultDTO Shoot(int positionX, int positionY);
     }
 }

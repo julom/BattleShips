@@ -16,9 +16,9 @@ namespace BattleShips.Core.GameEntities
             get { return Coordinates.All(x => x.Field.FieldType == FieldTypeEnum.ShipHit); }
         }
 
-        public Ship(IList<KeyValuePair<int, int>> coordinates, IShipCoordinatesValidator coordinatesValidator)
+        public Ship(IList<KeyValuePair<int, int>> coordinates, IShipCoordinatesValidator coordinatesValidator = null)
         {
-            this.coordinatesValidator = coordinatesValidator;
+            this.coordinatesValidator = coordinatesValidator ?? new ShipCoordinatesValidator();
             Size = coordinates.Count;
             Coordinates = GetCoordinates(coordinates);
         }

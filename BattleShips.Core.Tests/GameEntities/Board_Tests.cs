@@ -12,7 +12,6 @@ namespace BattleShips.Core.Tests.GameEntities
     public class Board_Tests
     {
         Board board;
-        Mock<IShip> mockShip = new Mock<IShip>();
 
         public static IEnumerable<TestCaseData> FieldCoordinates()
         {
@@ -28,7 +27,7 @@ namespace BattleShips.Core.Tests.GameEntities
             });
         }
 
-        [OneTimeSetUp]
+        [SetUp]
         public void InitializeGameSettings()
         {
             GameSettings.ShipSizes = new List<int> { 2 };
@@ -59,9 +58,7 @@ namespace BattleShips.Core.Tests.GameEntities
         [TestCaseSource(nameof(FieldCoordinates))]
         public void RandomizeShipsPositions_PopulatesShips(bool[,] fields)
         {
-            board = new Board(fields);
-
-            board.RandomizeShipsPositions(GameSettings.ShipSizes);
+            board = new Board();
 
             Assert.IsNotEmpty(board.Ships);
         }
@@ -73,11 +70,10 @@ namespace BattleShips.Core.Tests.GameEntities
             board = new Board(fields);
             var positionX = 1;
             var positionY = 1;
-            mockShip.Setup(x => x.TryToShoot(It.IsAny<int>(), It.IsAny<int>())).Returns(true);
 
             var result = board.Shoot(positionX, positionY);
 
-            Assert.IsTrue(result);
+            Assert.IsTrue(result.IsShipHit);
         }
 
         [Test]
@@ -87,7 +83,6 @@ namespace BattleShips.Core.Tests.GameEntities
             board = new Board(fields);
             var positionX = 1;
             var positionY = 1;
-            mockShip.Setup(x => x.TryToShoot(It.IsAny<int>(), It.IsAny<int>())).Returns(true);
 
             var result = board.Shoot(positionX, positionY);
 
@@ -101,11 +96,10 @@ namespace BattleShips.Core.Tests.GameEntities
             board = new Board(fields);
             var positionX = 0;
             var positionY = 0;
-            mockShip.Setup(x => x.TryToShoot(It.IsAny<int>(), It.IsAny<int>())).Returns(false);
 
             var result = board.Shoot(positionX, positionY);
 
-            Assert.IsFalse(result);
+            Assert.IsFalse(result.IsShipHit);
         }
 
         [Test]
@@ -115,7 +109,6 @@ namespace BattleShips.Core.Tests.GameEntities
             board = new Board(fields);
             var positionX = 0;
             var positionY = 0;
-            mockShip.Setup(x => x.TryToShoot(It.IsAny<int>(), It.IsAny<int>())).Returns(true);
 
             var result = board.Shoot(positionX, positionY);
 

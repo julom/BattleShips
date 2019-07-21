@@ -1,5 +1,6 @@
 ﻿using BattleShips.Core.Exceptions;
 using BattleShips.Core.GameEntities.Abstract;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -13,36 +14,119 @@ namespace BattleShips.Core.GameEntities
 
         public Board(bool[,] fields)
         {
-            Fields = FillTheFields(fields);
             Ships = DefineShipsPositions(fields);
+            Fields = FillTheFields(Ships);
         }
 
-        private IField[,] FillTheFields(bool[,] fields)
+        public Board()
         {
-            IField[,] result = new IField[10, 10];
+            RandomizeShipsPositions(GameSettings.ShipSizes);
+            Fields = FillTheFields(Ships);
+        }
 
-            for (int row = 0; row < fields.GetLength(0); row++)
+        private IField[,] FillTheFields(IShip[] ships)
+        {
+            IField[,] outputFields = new Field[10, 10];
+
+            foreach (var ship in ships)
             {
-                for (int col = 0; col < fields.GetLength(1); col++)
+                foreach (var shipSegment in ship.Coordinates)
                 {
-                    if (fields[row, col])
+                    outputFields[shipSegment.PositionX, shipSegment.PositionY] = new Field(FieldTypeEnum.Ship);
+                }
+            }
+            
+            for (int row = 0; row < GameSettings.BoardSizeX; row++)
+            {
+                for (int col = 0; col < GameSettings.BoardSizeY; col++)
+                {
+                    if (outputFields[row, col] == null)
                     {
-                        var shipField = new KeyValuePair<int, int>(row, col);
-                        result[row, col] = new Field(FieldTypeEnum.Ship);
-                    }
-                    else
-                    {
-                        result[row, col] = new Field(FieldTypeEnum.Empty);
+                        outputFields[row, col] = new Field(FieldTypeEnum.Empty);
                     }
                 }
             }
-
-            return result;
+            
+            return outputFields;
         }
 
         public void RandomizeShipsPositions(IList<int> shipSizes)
         {
-            throw new System.NotImplementedException();
+            Fields = new IField[GameSettings.BoardSizeY, GameSettings.BoardSizeX];
+            Ships = new IShip[GameSettings.ShipSizes.Count];
+
+            List<PossibleShipPosition> realShipPositions = new List<PossibleShipPosition>();
+            var random = new Random();
+
+            var shipsLeft = new List<int>(GameSettings.ShipSizes);
+            while (shipsLeft.Any())
+            {
+                var currentShipSize = shipsLeft.Max();
+
+                List<PossibleShipPosition> possiblePositions = new List<PossibleShipPosition>();
+
+                for (int row = 0; row < GameSettings.BoardSizeX; row++)
+                {
+                    for (int col = 0; col < GameSettings.BoardSizeY - currentShipSize; col++)
+                    {
+                        if (!realShipPositions.Any(x => x.OverlapsCurrentShip(row, col)))
+                        {
+                            possiblePositions.Add(new PossibleShipPosition() { Xfrom = row, Xto = row + currentShipSize, Yfrom = col, Yto = col });
+                            possiblePositions.Add(new PossibleShipPosition() { Xfrom = row, Xto = row, Yfrom = col, Yto = col + currentShipSize });
+                        }
+                    }
+                }
+
+                var chosenPossiblePosition = possiblePositions[random.Next(possiblePositions.Count)];
+                realShipPositions.Add(chosenPossiblePosition);
+
+                shipsLeft.Remove(currentShipSize);
+            }
+
+            for (int i = 0; i < realShipPositions.Count; i++)
+            {
+                PossibleShipPosition ship = realShipPositions[i];
+                List<KeyValuePair<int, int>> shipCoordinates = new List<KeyValuePair<int, int>>();
+
+                for (int j = 0; j < ship.Size; j++)
+                {
+                    if (ship.SizeX > 0)
+                        shipCoordinates.Add(new KeyValuePair<int, int>(ship.Xfrom + j, ship.Yfrom));
+                    else
+                        shipCoordinates.Add(new KeyValuePair<int, int>(ship.Xfrom, ship.Yfrom + j));
+                }
+
+                Ships[i] = new Ship(shipCoordinates);
+            }
+        }
+
+        private class PossibleShipPosition
+        {
+            public int Xfrom;
+            public int Xto;
+            public int Yfrom;
+            public int Yto;
+
+            public int SizeX
+            {
+                get { return Xto - Xfrom; }
+            }
+
+            public int SizeY
+            {
+                get { return Yto - Yfrom; }
+            }
+
+            public int Size
+            {
+                get { return Math.Max(SizeX, SizeY); }
+            }
+
+            public bool OverlapsCurrentShip(int posX, int posY)
+            {
+                return (posX >= Xfrom && posX <= Xto &&
+                    posY >= Yfrom && posY <= Yto);
+            }
         }
 
         public IShip[] DefineShipsPositions(bool[,] fields)
@@ -88,26 +172,28 @@ namespace BattleShips.Core.GameEntities
         {
             if (shipFields == null) return false;
 
-            if (shipFields.Any(x=>x.Key + 1 == field.Key || x.Value + 1 == field.Value))
+            if (shipFields.Any(x => x.Key + 1 == field.Key || x.Value + 1 == field.Value))
             {
                 return true;
             }
             return false;
         }
 
-        public bool Shoot(int positionX, int positionY)
+        public ShootResultDTO Shoot(int positionX, int positionY)
         {
+            ShootResultDTO result = new ShootResultDTO();
             var hit = Fields[positionY, positionX].Shoot();
             if (hit)
             {
-                var foundShip = false;
-                var shipIterator = 0;
-                while (!foundShip)
+                IShip shipHit = Ships.SingleOrDefault(x => x.TryToShoot(positionX, positionY));
+                if (shipHit != null)
                 {
-                    foundShip = Ships[shipIterator].TryToShoot(positionX, positionY);
+                    result.IsShipHit = true;
+                    result.IsShipSunk = shipHit.IsSunk;
                 }
+                else throw new GameLogicalException("Inconsistent fields on board and ships");
             }
-            return hit;
+            return result;
         }
     }
 }
