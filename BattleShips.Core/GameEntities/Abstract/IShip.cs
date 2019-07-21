@@ -7,7 +7,7 @@ namespace BattleShips.Core.GameEntities.Abstract
     public interface IShip
     {
         int Size { get; }
-        IList<IFieldPositionWrapper> Cooridnates { get; }
+        IList<IFieldPositionWrapper> Coordinates { get; }
         bool IsSunk { get; }
 
         bool TryToShoot(int positionX, int positionY);
