@@ -1,6 +1,9 @@
-﻿using BattleShips.Core.GameEntities;
+﻿using System.Collections.Generic;
+using System.Linq;
+using BattleShips.Core.GameEntities;
 using BattleShips.Core.GameEntities.Abstract;
 using BattleShips.Core.GameEntities.DifficultyLevels;
+using BattleShips.Core.GameEntities.DifficultyLevels.Abstract;
 using BattleShips.Core.GameEntities.Enums;
 using BattleShips.Core.GameEntities.Factories.Abstract;
 using Moq;
@@ -12,69 +15,103 @@ namespace BattleShips.Core.Tests.GameEntities
     public class Game_Tests
     {
         Game game;
-        Mock<IBoardFactory> mockBoardFactory = new Mock<IBoardFactory>();
-        Mock<IBoard> mockBoardPlayer = new Mock<IBoard>();
-        Mock<IBoard> mockBoardComputer = new Mock<IBoard>();
+        Mock<IBoardFactory> mockBoardFactory;
+        Mock<IBoard> mockBoardPlayer;
+        Mock<IBoard> mockBoardComputer;
+        Mock<IDifficultyLevel> mockDifficultyLevel;
+
+        public static IEnumerable<TestCaseData> FieldCoordinates()
+        {
+            yield return new TestCaseData(new bool[,] {
+                { false, false, false },
+                { false, true, false },
+                { false, true, false }
+            });
+            yield return new TestCaseData(new bool[,] {
+                { false, false, false },
+                { false, true, true },
+                { false, false, false }
+            });
+        }
 
         [SetUp]
         public void Init()
         {
+            mockBoardFactory = new Mock<IBoardFactory>();
+            mockBoardPlayer = new Mock<IBoard>();
+            mockBoardComputer = new Mock<IBoard>();
+            mockDifficultyLevel = new Mock<IDifficultyLevel>();
+
             mockBoardFactory.Setup(x => x.CreateBoard(It.IsAny<bool[,]>())).Returns(mockBoardComputer.Object);
             mockBoardFactory.Setup(x => x.CreateBoard(It.IsNotNull<bool[,]>())).Returns(mockBoardPlayer.Object);
 
+            mockBoardPlayer.Name = nameof(mockBoardPlayer);
+            mockBoardComputer.Name = nameof(mockBoardComputer);
         }
 
         [Test]
-        public void Game_HasTwoNotNullBoards()
+        [TestCaseSource(nameof(FieldCoordinates))]
+        public void Game_CreatesComputerAndPlayerBoards(bool[,] fields)
         {
-            game = new Game(mockBoardFactory.Object, new DifficultyLevelEasy());
+            game = new Game(fields, mockBoardFactory.Object, new DifficultyLevelEasy());
 
-            Assert.IsNotNull(game.ComputerBoard);
-            Assert.IsNotNull(game.PlayerBoard);
+            Assert.AreSame(mockBoardComputer.Object, game.ComputerBoard);
+            Assert.AreSame(mockBoardPlayer.Object, game.PlayerBoard);
         }
 
         [Test]
-        public void Game_IsWon_ComputerShipsAreSunk()
+        [TestCaseSource(nameof(FieldCoordinates))]
+        public void Game_IsWon_ComputerShipsAreSunk(bool[,] fields)
         {
             mockBoardComputer.Setup(x => x.AreAllShipsSunk).Returns(true);
-            game = new Game(mockBoardFactory.Object, new DifficultyLevelEasy());
+            game = new Game(fields, mockBoardFactory.Object, new DifficultyLevelEasy());
 
             Assert.IsTrue(game.IsWon);
         }
 
         [Test]
-        public void Game_IsLost_PlayerShipsAreSunk()
+        [TestCaseSource(nameof(FieldCoordinates))]
+        public void Game_IsLost_PlayerShipsAreSunk(bool[,] fields)
         {
             mockBoardPlayer.Setup(x => x.AreAllShipsSunk).Returns(true);
-            game = new Game(mockBoardFactory.Object, new DifficultyLevelEasy());
+            game = new Game(fields, mockBoardFactory.Object, new DifficultyLevelEasy());
 
             Assert.IsTrue(game.IsLost);
         }
 
         [Test]
-        public void MakeComputerMovement_ReturnsArrayWithShot()
+        public void MakeComputerMovement_UsesDifficultyLevelToChooseShotCoordinates()
         {
-            var fields = new Field[,] { { new Field(FieldTypes.Empty, 0, 0) } };
-            mockBoardComputer.Setup(x => x.Fields).Returns(fields);
-            mockBoardPlayer.Setup(x => x.Fields).Returns(fields);
-            game = new Game(mockBoardFactory.Object, new DifficultyLevelEasy());
+            game = new Game(new bool[1, 1], mockBoardFactory.Object, mockDifficultyLevel.Object);
 
             game.MakeComputerMovement();
 
-            Assert.AreNotEqual(fields, game.PlayerBoard);
+            mockDifficultyLevel.Verify(x => x.ChooseShotCoordinates(mockBoardPlayer.Object), Times.Once,
+                "Computer movement should rely on IDifficultyLevel interface");
         }
 
         [Test]
-        public void MakePlayerMovement_ReturnsArrayWithShot()
+        public void MakeComputerMovement_ReturnsExpectedShootResult([Values] bool isHit, [Values] bool isSunk)
         {
-            var fields = new Field[,] { { new Field(FieldTypes.Empty, 0, 0) } };
-            mockBoardComputer.Setup(x => x.Fields).Returns(fields);
-            mockBoardPlayer.Setup(x => x.Fields).Returns(fields);
-            game = new Game(mockBoardFactory.Object, new DifficultyLevelEasy());
+            var expectedResult = new ShootResultDTO() {IsShipHit = isHit, IsShipSunk = isSunk };
+            mockBoardPlayer.Setup(x => x.Shoot(It.IsAny<int>(), It.IsAny<int>())).Returns(expectedResult);
+            game = new Game(new bool[1,1], mockBoardFactory.Object, mockDifficultyLevel.Object);
 
-            game.MakePlayerMovement(0, 0);
+            var result = game.MakeComputerMovement();
 
-            Assert.AreNotEqual(fields, game.PlayerBoard);
+            Assert.AreEqual(expectedResult, result);
+        }
+
+        [Test]
+        public void MakePlayerMovement_ReturnsExpectedShootResult([Values] bool isHit, [Values] bool isSunk)
+        {
+            var expectedResult = new ShootResultDTO() { IsShipHit = isHit, IsShipSunk = isSunk };
+            mockBoardComputer.Setup(x => x.Shoot(It.IsAny<int>(), It.IsAny<int>())).Returns(expectedResult);
+            game = new Game(new bool[1, 1], mockBoardFactory.Object, mockDifficultyLevel.Object);
+
+            var result = game.MakePlayerMovement(0, 0);
+
+            Assert.AreEqual(expectedResult, result);
         }
     }
 }
