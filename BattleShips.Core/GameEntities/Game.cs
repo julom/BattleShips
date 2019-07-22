@@ -23,9 +23,9 @@ namespace BattleShips.Core.GameEntities
         }
 
 
-        public Game(IBoardFactory boardFactory, IDifficultyLevel difficulty)
+        public Game(bool[,] playerFields, IBoardFactory boardFactory, IDifficultyLevel difficulty)
         {
-            PlayerBoard = boardFactory.CreateBoard();
+            PlayerBoard = boardFactory.CreateBoard(playerFields);
             ComputerBoard = boardFactory.CreateBoard();
             this.difficulty = difficulty;
         }
