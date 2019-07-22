@@ -83,7 +83,7 @@ namespace BattleShips.Core.Tests.GameEntities
         }
 
         [Test]
-        [Repeat(10)]
+        [Repeat(1000)]
         public void RandomizeShipsPositions_PopulatesShips()
         {
             board = new Board();

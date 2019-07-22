@@ -74,7 +74,7 @@ namespace BattleShips.Core.GameEntities
 
                 List<PossibleShipPosition> possiblePositions = new List<PossibleShipPosition>();
 
-                for (int row = 0; row < GameSettings.BoardSizeX; row++)
+                for (int row = 0; row < GameSettings.BoardSizeX - currentShipSize; row++)
                 {
                     for (int col = 0; col < GameSettings.BoardSizeY - currentShipSize; col++)
                     {
