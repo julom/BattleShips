@@ -1,23 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using BattleShips.Core;
+﻿using BattleShips.Core;
+using BattleShips.Web.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BattleShips.Web.Controllers
 {
     public class GameController : Controller
     {
+        [HttpGet]
         public IActionResult Index()
         {
-            ViewData["RowsNumber"] = GameSettings.BoardSizeY;
-            ViewData["ColumnsNumber"] = GameSettings.BoardSizeX;
-            return View();
+            var gameModel = new GameModel();
+            return View(gameModel);
         }
 
-        public IActionResult Create()
+        [HttpPost]
+        public IActionResult Create(string startGame, string clearBoard)
         {
+
             return View();
         }
     }
