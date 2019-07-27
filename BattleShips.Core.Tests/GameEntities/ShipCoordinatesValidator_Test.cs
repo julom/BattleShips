@@ -47,24 +47,30 @@ namespace BattleShips.Core.Tests.GameEntities
             yield return new TestCaseData(list);
         }
 
+        [Test]
+        [TestCaseSource(nameof(ProperCoordinates))]
+        public void Ship_HasProperCoordinates_ReturnsTrue(IList<KeyValuePair<int, int>> shipFields)
+        {
+            Assert.IsTrue(validator.Validate(shipFields), "Proper coordinates not passed");
+        }
 
         [Test]
         [TestCaseSource(nameof(WrongCoordinates))]
-        public void Ship_HasCoordinatesNotInStraightLine_ThrowsException(IList<KeyValuePair<int, int>> shipFields)
+        public void Ship_HasCoordinatesNotInStraightLine_ReturnsFalse(IList<KeyValuePair<int, int>> shipFields)
         {
             Assert.IsFalse(validator.Validate(shipFields), "Wrong coordinates, ships must be placed in one line without spaces");
         }
 
         [Test]
         [TestCaseSource(nameof(TooShortCoordinates))]
-        public void Ship_HasStraightLineCoordinatesLessThanSmallestShipSize_ThrowsException(IList<KeyValuePair<int, int>> shipFields)
+        public void Ship_HasStraightLineCoordinatesLessThanSmallestShipSize_ReturnsFalse(IList<KeyValuePair<int, int>> shipFields)
         {
             Assert.IsFalse(validator.Validate(shipFields), "Too small number of coordinates, required at least " + GameSettings.ShipSizes.Min());
         }
 
         [Test]
-        [TestCaseSource(nameof(TooShortCoordinates))]
-        public void Ship_HasStraightLineCoordinatesMoreThanBiggestShipSize_ThrowsException(IList<KeyValuePair<int, int>> shipFields)
+        [TestCaseSource(nameof(TooBigCoordinates))]
+        public void Ship_HasStraightLineCoordinatesMoreThanBiggestShipSize_ReturnsFalse(IList<KeyValuePair<int, int>> shipFields)
         {
             Assert.IsFalse(validator.Validate(shipFields), "Too big number of coordinates, required max " + GameSettings.ShipSizes.Max());
         }
