@@ -14,8 +14,8 @@ namespace BattleShips.Core.Tests.GameEntities
 
         public static IEnumerable<TestCaseData> ProperVectors()
         {
-            yield return new TestCaseData(new ShipVector(0, 2), new ShipVector(1, 1));
-            yield return new TestCaseData(new ShipVector(2, 2), new ShipVector(0, 2));
+            yield return new TestCaseData(new ShipVector(0, 3), new ShipVector(1, 1));
+            yield return new TestCaseData(new ShipVector(2, 2), new ShipVector(0, 3));
         }
 
         public static IEnumerable<TestCaseData> WrongVectorsExceedingBoard()
@@ -35,7 +35,7 @@ namespace BattleShips.Core.Tests.GameEntities
             List<TestCaseData> list = new List<TestCaseData>();
             for (int i = 0; i < GameSettings.ShipSizes.Min() - 1; i++)
             {
-                var testCase = new TestCaseData(new ShipVector(0, i), new ShipVector(1, i));
+                var testCase = new TestCaseData(new ShipVector(1, i), new ShipVector(1, 1));
                 list.Add(testCase);
                 yield return testCase;
             }
@@ -44,14 +44,14 @@ namespace BattleShips.Core.Tests.GameEntities
         public static IEnumerable<TestCaseData> TooBigVectors()
         {
             List<TestCaseData> list = new List<TestCaseData>();
-            for (int i = 0; i < GameSettings.ShipSizes.Max() + 1; i++)
+            for (int i = GameSettings.ShipSizes.Max() + 1; i < GameSettings.ShipSizes.Max() + 2; i++)
             {
-                var testCase = new TestCaseData(new ShipVector(0, i), new ShipVector(1, i));
+                var testCase = new TestCaseData(new ShipVector(1, i), new ShipVector(1, 1));
                 list.Add(testCase);
                 yield return testCase;
             }
         }
-
+        
         [Test]
         [TestCaseSource(nameof(ProperVectors))]
         public void Ship_HasProperVectors_ReturnsTrue(ShipVector vectorX, ShipVector vectorY)
