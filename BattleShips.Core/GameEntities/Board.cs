@@ -1,6 +1,7 @@
 ﻿using BattleShips.Core.Exceptions;
 using BattleShips.Core.GameEntities.Abstract;
 using BattleShips.Core.GameEntities.Enums;
+using BattleShips.Core.GameEntities.Structs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -59,83 +60,58 @@ namespace BattleShips.Core.GameEntities
             return outputFields;
         }
 
+        public bool VectorsOverlapsShip(IShip ship, VectorLayout vectors)
+        {
+            return
+                ship.Coordinates.Any(x => vectors.Values.Any(val => val.Equals(x.Position)));
+        }
+
         public void RandomizeShipsPositions(IList<int> shipSizes)
         {
-            Fields = new IField[GameSettings.BoardSizeY, GameSettings.BoardSizeX];
-            Ships = new IShip[GameSettings.ShipSizes.Count];
-
-            List<PossibleShipPosition> realShipPositions = new List<PossibleShipPosition>();
+            var existingShipPositions = new List<IShip>();
             var random = new Random();
 
             var shipsLeft = new List<int>(GameSettings.ShipSizes);
             while (shipsLeft.Any())
             {
                 var currentShipSize = shipsLeft.Max();
+                var vectorDifference = currentShipSize - 1; // i.e. vector (5,9) is for ship length of 5, but 9 - 5 = 4
 
-                List<PossibleShipPosition> possiblePositions = new List<PossibleShipPosition>();
+                var possiblePositions = new List<IShip>();
 
-                for (int row = 0; row < GameSettings.BoardSizeX - currentShipSize; row++)
+                // add possible positions of vertically alligned ships
+                for (int row = 0; row < GameSettings.BoardSizeX - vectorDifference; row++)
                 {
-                    for (int col = 0; col < GameSettings.BoardSizeY - currentShipSize; col++)
+                    for (int col = 0; col < GameSettings.BoardSizeY; col++)
                     {
-                        if (!realShipPositions.Any(x => x.OverlapsCurrentShip(row, col)))
+                        var vectorVerticalLayout = new VectorLayout(new ShipVector(row, row + vectorDifference), new ShipVector(col, col));
+                        if (!existingShipPositions.Any(x => VectorsOverlapsShip(x, vectorVerticalLayout)))
                         {
-                            possiblePositions.Add(new PossibleShipPosition() { Xfrom = row, Xto = row + currentShipSize, Yfrom = col, Yto = col });
-                            possiblePositions.Add(new PossibleShipPosition() { Xfrom = row, Xto = row, Yfrom = col, Yto = col + currentShipSize });
+                            possiblePositions.Add(new Ship(vectorVerticalLayout.VectorX, vectorVerticalLayout.VectorY));
+                        }
+                    }
+                }
+
+                // add possible positions of horizontally alligned ships
+                for (int row = 0; row < GameSettings.BoardSizeX; row++)
+                {
+                    for (int col = 0; col < GameSettings.BoardSizeY - vectorDifference; col++)
+                    {
+                        var vectorHorizontalLayout = new VectorLayout(new ShipVector(row, row), new ShipVector(col, col + vectorDifference));
+                        if (!existingShipPositions.Any(x => VectorsOverlapsShip(x, vectorHorizontalLayout)))
+                        {
+                            possiblePositions.Add(new Ship(vectorHorizontalLayout.VectorX, vectorHorizontalLayout.VectorY));
                         }
                     }
                 }
 
                 var chosenPossiblePosition = possiblePositions[random.Next(possiblePositions.Count)];
-                realShipPositions.Add(chosenPossiblePosition);
+                existingShipPositions.Add(chosenPossiblePosition);
 
                 shipsLeft.Remove(currentShipSize);
             }
 
-            for (int i = 0; i < realShipPositions.Count; i++)
-            {
-                PossibleShipPosition ship = realShipPositions[i];
-                List<KeyValuePair<int, int>> shipCoordinates = new List<KeyValuePair<int, int>>();
-
-                for (int j = 0; j < ship.Size; j++)
-                {
-                    if (ship.SizeX > 0)
-                        shipCoordinates.Add(new KeyValuePair<int, int>(ship.Xfrom + j, ship.Yfrom));
-                    else
-                        shipCoordinates.Add(new KeyValuePair<int, int>(ship.Xfrom, ship.Yfrom + j));
-                }
-
-                Ships[i] = new Ship(shipCoordinates);
-            }
-        }
-
-        private class PossibleShipPosition
-        {
-            public int Xfrom;
-            public int Xto;
-            public int Yfrom;
-            public int Yto;
-
-            public int SizeX
-            {
-                get { return Xto - Xfrom; }
-            }
-
-            public int SizeY
-            {
-                get { return Yto - Yfrom; }
-            }
-
-            public int Size
-            {
-                get { return Math.Max(SizeX, SizeY); }
-            }
-
-            public bool OverlapsCurrentShip(int posX, int posY)
-            {
-                return (posX >= Xfrom && posX <= Xto &&
-                    posY >= Yfrom && posY <= Yto);
-            }
+            Ships = existingShipPositions.ToArray();
         }
 
         public IShip[] DefineShipsPositions(bool[,] fields)
@@ -163,14 +139,19 @@ namespace BattleShips.Core.GameEntities
                 }
             }
 
-            if (shipsFields.Count > GameSettings.ShipSizes.Count)
+            if (shipsFields.Count != GameSettings.ShipSizes.Count)
             {
-                throw new GameArgumentException("Ship count exceeded");
+                throw new GameArgumentException("Ship count not matched with game settings");
+            }
+
+            if (fields.Length != GameSettings.ShipSizes.Sum())
+            {
+                throw new GameArgumentException("Ship fields count not matched with game settings");
             }
 
             foreach (var shipFields in shipsFields)
             {
-                var ship = new Ship(shipFields, new ShipCoordinatesValidator());
+                var ship = new Ship(shipFields);
                 ships.Add(ship);
             }            
 
@@ -181,7 +162,8 @@ namespace BattleShips.Core.GameEntities
         {
             if (shipFields == null) return false;
 
-            if (shipFields.Any(x => x.Key + 1 == field.Key || x.Value + 1 == field.Value))
+            if (shipFields.Any(x => x.Key + 1 == field.Key && x.Value == field.Value || 
+                                    x.Value + 1 == field.Value && x.Key == field.Key))
             {
                 return true;
             }
