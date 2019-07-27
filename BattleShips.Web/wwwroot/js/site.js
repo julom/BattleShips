@@ -3,9 +3,9 @@
 
 // Write your JavaScript code.
 
-$(document).ready(function (e) {
+// function to select ship
+$(document).ready(function () {
     $(".lbl-check").click(function () {
-        console.log("before classes: " + this.classList);
 
         $(this).find(".btn-check").toggleClass("check");
 
@@ -13,6 +13,38 @@ $(document).ready(function (e) {
             return !value;
         });
 
-        console.log("after classes: " + this.classList);
+    });
+});
+
+// function to reset ships positions
+$(document).ready(function () {
+    $("#btn-reset").click(function () {
+
+        var userTable = $("#table-user-input");
+
+        var buttons = userTable.find(".btn-check");
+        buttons.removeClass("check");
+
+        var checkboxes = userTable.find(".cbx-check");
+        checkboxes.prop("checked", false);
+
+    });
+});
+
+// function to mark fields after turn
+$(document).ready(function () {
+    $(".table-board .lbl-check").each(function () {
+
+        console.log("cbx value is " + $(this).find(".cbx-check").val());
+        var isFieldToMark = $(this).find(".cbx-check").val() === "value";
+
+        if (isFieldToMark) {
+            console.log("field is to mark");
+            $(this).find(".btn-check").toggleClass("check");
+
+            $(this).prop('checked', function (i, value) {
+                return !value;
+            });
+        };
     });
 });

@@ -1,4 +1,4 @@
-﻿@model BattleShips.Web.Models.GameModel
+﻿@model GameModel
 
 @{
     ViewData["Title"] = "Welcome";
@@ -10,35 +10,47 @@
     <p>Please place all your ships on board below</p>
 </div>
 
-<div class="well well-lg col-md-12">
-    <div class="col-md-6">
-        <table>
-            @for (int row = 0; row < Model.SizeY; row++)
-            {
+
+<form asp-controller="Game" asp-action="Create" method="post">
+    <div class="well well-lg col-md-12">
+        <div class="col-md-6">
+            <table id="table-user-input">
                 <tr>
-                    @for (int col = 0; col < Model.SizeX; col++)
+                    <th></th>
+                    @for (int col = 65; col < 65 + Model.SizeX; col++)
                     {
-                        <td>
-                            <div class="board-cell">
-                                <label class="lbl-check">
-                                    <button type="button" class="btn btn-check" />
-                                    <input type="checkbox" class="cbx-check hidden" autocomplete="off" />
-                                </label>
-                            </div>
-                        </td>
+                        <th>&#@col;</th>
                     }
                 </tr>
-            }
-        </table>
+                @for (int row = 0; row < Model.SizeY; row++)
+                {
+                    <tr>
+                        <th>@(row + 1)</th>
+                        @for (int col = 0; col < Model.SizeX; col++)
+                        {
+                            <td>
+                                <div class="board-cell">
+                                    <label class="lbl-check">
+                                        <button type="button" class="btn btn-check" />
+                                        <input type="checkbox" class="cbx-check hidden" autocomplete="off" asp-for="@Model.PlayerShipsPositions[row * Model.SizeY + col]" />
+                                    </label>
+                                </div>
+                            </td>
+                        }
+                    </tr>
+                }
+            </table>
+        </div>
+        <div class="col-md-6">
+            <p>Place your ships in straight line:</p>
+            <ul>
+                <li>1x Battleship (5 squares)</li>
+                <li>2x Destroyers (4 squares)</li>
+                <li>@Model.PlayerShipsPositions[0]</li>
+            </ul>
+        </div>
     </div>
-    <div class="col-md-6">
-        <p>Place your ships in straight line:</p>
-        <ul>
-            <li>1x Battleship (5 squares)</li>
-            <li>2x Destroyers (4 squares)</li>
-        </ul>
-    </div>
-</div>
 
-<button type="submit" class="btn btn-primary" name="startGame" asp-controller="Game" asp-action="Create" method="post">Start</button>
-<button type="reset" class="btn btn-primary" name="clearBoard" asp-controller="Game" asp-action="Index" method="get">Clear</button>
+    <button type="submit" class="btn btn-primary" name="startGame" asp-controller="Game" asp-action="Create" method="post">Start</button>
+    <button type="reset" class="btn btn-primary" id="btn-reset" value="Reset">Clear</button>
+</form>

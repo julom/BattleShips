@@ -14,10 +14,11 @@ namespace BattleShips.Web.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create(string startGame, string clearBoard)
+        public IActionResult Create(GameModel gameModel)
         {
+            gameModel.InitializeGame();
 
-            return View();
+            return View("GameProgress", gameModel);
         }
     }
 }

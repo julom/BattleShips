@@ -1,0 +1,69 @@
+﻿@model  GameModel
+
+@{
+    ViewData["Title"] = "GameProgress";
+}
+
+<h2>Game in progress</h2>
+
+<div class="well well-lg col-md-12">
+    <div class="col-md-6">
+        <p>Your board:</p>
+        <table id="table-board-user" class="table-board">
+            <tr>
+                <th></th>
+                @for (int col = 65; col < 65 + Model.SizeX; col++)
+                {
+                    <th>&#@col;</th>
+                }
+            </tr>
+            @for (int row = 0; row < Model.SizeY; row++)
+            {
+                <tr>
+                    <th>@(row + 1)</th>
+                    @for (int col = 0; col < Model.SizeX; col++)
+                    {
+                        <td>
+                            <div class="board-cell">
+                                <label class="lbl-check">
+                                    <button type="button" class="btn btn-check" />
+                                    <input type="checkbox" class="cbx-check hidden" autocomplete="off" value="@Model.Game.PlayerBoard.Fields[row,col].IsShipField" />
+                                </label>
+                            </div>
+                        </td>
+                    }
+                </tr>
+            }
+        </table>
+    </div>
+    <div class="col-md-6">
+        <p>Opponent's board:</p>
+        <table id="table-board-computer" class="table-board">
+            <tr>
+                <th></th>
+                @for (int col = 65; col < 65 + Model.SizeX; col++)
+                {
+                    <th>&#@col;</th>
+                }
+            </tr>
+            @for (int row = 0; row < Model.SizeY; row++)
+            {
+                <tr>
+                    <th>@(row + 1)</th>
+                    @for (int col = 0; col < Model.SizeX; col++)
+                    {
+                        <td>
+                            <div class="board-cell">
+                                <label class="lbl-check">
+                                    <button type="button" class="btn btn-check" />
+                                    <input type="checkbox" class="cbx-check hidden" autocomplete="off" value="@Model.Game.ComputerBoard.Fields[row,col].IsShipField" />
+                                </label>
+                            </div>
+                        </td>
+                    }
+                </tr>
+            }
+        </table>
+    </div>
+</div>
+

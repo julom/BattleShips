@@ -7,6 +7,12 @@ a.navbar-brand {
   word-break: break-all;
 }
 
+/* Board headers
+-------------------------------------------------- */
+table tr th {
+    text-align: center;
+}
+
 /* Board checkers
 -------------------------------------------------- */
 .board-cell {
