@@ -1,6 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace BattleShips.Core.GameEntities.Structs
 {
@@ -8,7 +7,7 @@ namespace BattleShips.Core.GameEntities.Structs
     {
         public int From { get; set; }
         public int To { get; set; }
-
+        public int Size { get { return Values.Count(); } }
         public IEnumerable<int> Values
         {
             get
