@@ -18,11 +18,18 @@ namespace BattleShips.Core.Tests.GameEntities
             yield return new TestCaseData(new ShipVector(2, 2), new ShipVector(0, 2));
         }
 
-        public static IEnumerable<TestCaseData> WrongVectors()
+        public static IEnumerable<TestCaseData> WrongVectorsExceedingBoard()
         {
             yield return new TestCaseData(new ShipVector(0, GameSettings.BoardSizeX + 1), new ShipVector(1, 1));
             yield return new TestCaseData(new ShipVector(2, 2), new ShipVector(0, GameSettings.BoardSizeY + 1));
         }
+
+        public static IEnumerable<TestCaseData> DiagonalVectors()
+        {
+            yield return new TestCaseData(new ShipVector(0, 2), new ShipVector(1, 2));
+            yield return new TestCaseData(new ShipVector(1, 2), new ShipVector(0, 2));
+        }
+
         public static IEnumerable<TestCaseData> TooShortVectors()
         {
             List<TestCaseData> list = new List<TestCaseData>();
@@ -53,10 +60,17 @@ namespace BattleShips.Core.Tests.GameEntities
         }
 
         [Test]
-        [TestCaseSource(nameof(WrongVectors))]
+        [TestCaseSource(nameof(WrongVectorsExceedingBoard))]
         public void Ship_HasVectorsExceedingBoard_ReturnsFalse(ShipVector vectorX, ShipVector vectorY)
         {
             Assert.IsFalse(validator.Validate(vectorX, vectorY), "Vectors exceeding board size should not pass");
+        }
+
+        [Test]
+        [TestCaseSource(nameof(DiagonalVectors))]
+        public void Ship_HasDiagonalVectors_ReturnsFalse(ShipVector vectorX, ShipVector vectorY)
+        {
+            Assert.IsFalse(validator.Validate(vectorX, vectorY), "Diagonal vectors should not pass");
         }
 
         [Test]
