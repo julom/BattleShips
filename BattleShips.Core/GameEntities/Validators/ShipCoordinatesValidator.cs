@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using BattleShips.Core.Exceptions;
-using BattleShips.Core.GameEntities.Abstract;
+using BattleShips.Core.GameEntities.Validators.Abstract;
 
-namespace BattleShips.Core.GameEntities
+namespace BattleShips.Core.GameEntities.Validators
 {
     public class ShipCoordinatesValidator : IShipCoordinatesValidator
     {

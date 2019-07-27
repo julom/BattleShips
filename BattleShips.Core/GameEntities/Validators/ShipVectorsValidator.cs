@@ -1,8 +1,8 @@
-﻿using BattleShips.Core.GameEntities.Abstract;
-using BattleShips.Core.GameEntities.Structs;
+﻿using BattleShips.Core.GameEntities.Structs;
+using BattleShips.Core.GameEntities.Validators.Abstract;
 using System.Linq;
 
-namespace BattleShips.Core.GameEntities
+namespace BattleShips.Core.GameEntities.Validators
 {
     public class ShipVectorsValidator : IShipVectorsValidator
     {

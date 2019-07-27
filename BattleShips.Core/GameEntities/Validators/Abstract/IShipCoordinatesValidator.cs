@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace BattleShips.Core.GameEntities.Abstract
+namespace BattleShips.Core.GameEntities.Validators.Abstract
 {
     public interface IShipCoordinatesValidator
     {

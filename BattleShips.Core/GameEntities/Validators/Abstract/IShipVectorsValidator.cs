@@ -1,6 +1,6 @@
 ﻿using BattleShips.Core.GameEntities.Structs;
 
-namespace BattleShips.Core.GameEntities.Abstract
+namespace BattleShips.Core.GameEntities.Validators.Abstract
 {
     public interface IShipVectorsValidator
     {

@@ -1,23 +1,25 @@
 ﻿using BattleShips.Core.Exceptions;
 using BattleShips.Core.GameEntities.Abstract;
 using BattleShips.Core.GameEntities.Enums;
+using BattleShips.Core.GameEntities.Structs;
 using System;
 
 namespace BattleShips.Core.GameEntities
 {
     public class Field : IField
     {
-        public int PositionX { get; }
+        public Coordinate Position { get; }
+        public int PositionX { get => Position.PositionX; }
+        public int PositionY { get => Position.PositionY; }
+        public FieldTypes FieldType { get; private set; } = FieldTypes.Empty;
+        public bool IsShipField { get => FieldType == FieldTypes.Ship; }
 
-        public int PositionY { get; }
-
-        public FieldTypes FieldType { get; private set; }
+        public Field() { }
 
         public Field(FieldTypes fieldType, int positionX, int positionY)
         {
             FieldType = fieldType;
-            PositionX = positionX;
-            PositionY = positionY;
+            Position = new Coordinate(positionX, positionY);
         }
 
         public bool Shoot()
