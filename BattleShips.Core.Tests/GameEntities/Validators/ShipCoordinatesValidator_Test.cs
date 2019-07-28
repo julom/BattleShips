@@ -1,5 +1,6 @@
 ﻿using BattleShips.Core.Exceptions;
 using BattleShips.Core.GameEntities;
+using BattleShips.Core.GameEntities.Validators;
 using BattleShips.Core.Utils;
 using NUnit.Framework;
 using System.Collections.Generic;

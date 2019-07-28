@@ -144,7 +144,7 @@ namespace BattleShips.Core.GameEntities
                 throw new GameArgumentException("Ship count not matched with game settings");
             }
 
-            if (fields.Length != GameSettings.ShipSizes.Sum())
+            if (fields.Cast<bool>().Count(x => x) != GameSettings.ShipSizes.Sum())
             {
                 throw new GameArgumentException("Ship fields count not matched with game settings");
             }

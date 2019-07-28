@@ -12,7 +12,7 @@ namespace BattleShips.Core.GameEntities
         public int PositionX { get => Position.PositionX; }
         public int PositionY { get => Position.PositionY; }
         public FieldTypes FieldType { get; private set; } = FieldTypes.Empty;
-        public bool IsShipField { get => FieldType == FieldTypes.Ship; }
+        public bool IsShipField { get => FieldType.Equals(FieldTypes.Ship) || FieldType.Equals(FieldTypes.ShipHit); }
         public bool IsFieldShot { get => FieldType.Equals(FieldTypes.MissedShot) || FieldType.Equals(FieldTypes.ShipHit); }
 
         public Field() { }

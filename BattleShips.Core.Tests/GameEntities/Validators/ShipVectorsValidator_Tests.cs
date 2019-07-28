@@ -1,5 +1,6 @@
 ﻿using BattleShips.Core.GameEntities;
 using BattleShips.Core.GameEntities.Structs;
+using BattleShips.Core.GameEntities.Validators;
 using NUnit.Framework;
 using System.Collections.Generic;
 using System.Linq;

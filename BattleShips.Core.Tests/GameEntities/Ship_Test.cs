@@ -7,6 +7,7 @@ using BattleShips.Core.GameEntities.Abstract;
 using Moq;
 using BattleShips.Core.Utils;
 using BattleShips.Core.GameEntities.Enums;
+using BattleShips.Core.GameEntities.Validators.Abstract;
 
 namespace BattleShips.Core.Tests.GameEntities
 {
