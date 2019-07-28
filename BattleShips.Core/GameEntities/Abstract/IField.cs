@@ -12,6 +12,7 @@ namespace BattleShips.Core.GameEntities.Abstract
         FieldTypes FieldType { get; }
 
         bool IsShipField { get; }
+        bool IsFieldShot { get; }
 
         bool Shoot();  
     }
