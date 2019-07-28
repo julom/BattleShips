@@ -5,13 +5,23 @@
 
 // function to select ship
 $(document).ready(function () {
-    $(".lbl-check").click(function () {
+    $("#table-user-input .lbl-check").click(function () {
 
-        $(this).find(".btn-check").toggleClass("check");
+        $(this).find(".btn-check").toggleClass("ship");
 
         $(this).find(".cbx-check").prop('checked', function (i, value) {
             return !value;
         });
+
+    });
+});
+
+// function to shoot fields
+$(document).ready(function () {
+    $(".table-board .lbl-check").click(function () {
+
+        $(this).find(".cell").toggleClass("is-hit");
+
 
     });
 });
@@ -23,7 +33,7 @@ $(document).ready(function () {
         var userTable = $("#table-user-input");
 
         var buttons = userTable.find(".btn-check");
-        buttons.removeClass("check");
+        buttons.removeClass("ship");
 
         var checkboxes = userTable.find(".cbx-check");
         checkboxes.prop("checked", false);
@@ -40,7 +50,7 @@ $(document).ready(function () {
 
         if (isFieldToMark) {
             console.log("field is to mark");
-            $(this).find(".btn-check").toggleClass("check");
+            $(this).find(".btn-check").toggleClass("ship");
 
             $(this).prop('checked', function (i, value) {
                 return !value;

@@ -26,8 +26,11 @@
                         <td>
                             <div class="board-cell">
                                 <label class="lbl-check">
-                                    <button type="button" class="btn btn-check" />
-                                    <input type="checkbox" class="cbx-check hidden" autocomplete="off" value="@Model.Game.PlayerBoard.Fields[row,col].IsShipField" />
+                                    <button type="button" class="btn btn-check" disabled>
+                                        <div class="cell" />
+                                        <param name="cell-param-is-hit" valuetype="bool" value="@Model.CurrentGame.ComputerBoard.Fields[row,col].IsFieldShot" />
+                                    </button>
+                                    <input type="checkbox" class="cbx-check hidden" autocomplete="off" value="@Model.CurrentGame.PlayerBoard.Fields[row,col].IsShipField" />
                                 </label>
                             </div>
                         </td>
@@ -38,32 +41,39 @@
     </div>
     <div class="col-md-6">
         <p>Opponent's board:</p>
-        <table id="table-board-computer" class="table-board">
-            <tr>
-                <th></th>
-                @for (int col = 65; col < 65 + Model.SizeX; col++)
-                {
-                    <th>&#@col;</th>
-                }
-            </tr>
-            @for (int row = 0; row < Model.SizeY; row++)
-            {
+        <form enctype="multipart/form-data" asp-controller="Game" asp-action="NextTurn" method="post">
+            <input hidden name="game" asp-for="CurrentGame" />
+            <input hidden name="gameModel" asp-for="@Model" />
+            <table id="table-board-computer" class="table-board">
                 <tr>
-                    <th>@(row + 1)</th>
-                    @for (int col = 0; col < Model.SizeX; col++)
+                    <th></th>
+                    @for (int col = 65; col < 65 + Model.SizeX; col++)
                     {
-                        <td>
-                            <div class="board-cell">
-                                <label class="lbl-check">
-                                    <button type="button" class="btn btn-check" />
-                                    <input type="checkbox" class="cbx-check hidden" autocomplete="off" value="@Model.Game.ComputerBoard.Fields[row,col].IsShipField" />
-                                </label>
-                            </div>
-                        </td>
+                        <th>&#@col;</th>
                     }
                 </tr>
-            }
-        </table>
+                @for (int row = 0; row < Model.SizeY; row++)
+                {
+                    <tr>
+                        <th>@(row + 1)</th>
+                        @for (int col = 0; col < Model.SizeX; col++)
+                        {
+                            <td>
+                                <div class="board-cell">
+                                    <label class="lbl-check">
+                                        <button type="submit" class="btn btn-check" asp-controller="Game" asp-action="NextTurn" asp-route-id="@(row * Model.SizeY + col)" method="post">
+                                            <div class="cell" />
+                                            <param name="cell-param-is-hit" valuetype="bool" value="@Model.CurrentGame.ComputerBoard.Fields[row,col].IsFieldShot" />
+                                        </button>
+                                        <input type="checkbox" class="cbx-check hidden" autocomplete="off" value="@Model.CurrentGame.ComputerBoard.Fields[row,col].IsShipField" />
+                                    </label>
+                                </div>
+                            </td>
+                        }
+                    </tr>
+                }
+            </table>
+        </form>
     </div>
 </div>
 

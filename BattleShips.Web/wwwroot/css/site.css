@@ -15,6 +15,13 @@ table tr th {
 
 /* Board checkers
 -------------------------------------------------- */
+
+:root {
+    --empty-cell-bg-color: lightblue;
+    --ship-cell-bg-color: black;
+    --cell-bg-color: lightblue;
+}
+
 .board-cell {
     margin: 5px;
     height: 30px;
@@ -22,21 +29,41 @@ table tr th {
 }
 
 .btn-check {
-    background-color: white;
     height: 30px;
     width: 30px;
-    background-color: lightblue;
+    background-color: var(--empty-cell-bg-color);
 }
 
-.check {
+.btn-check.ship {
     opacity: 0.5;
-    background-color: black;
+    background-color: var(--ship-cell-bg-color);
+}
+
+@keyframes hitting {
+    from {
+        background-color: var(--empty-cell-bg-color);
+    }
+    
+    to {
+        background-color: red;
+    }
+}
+
+.cell.is-hit {
+    opacity: 1;
+    animation-name: hitting;
+    animation-duration: 1s;
+    border-radius: 50%;
+    background-color: red;
+    position: relative center;
+    height: 5px;
+    width: 5px;
 }
 
 /* Sticky footer styles
 -------------------------------------------------- */
 html {
-  font-size: 14px;
+    font-size: 14px;
 }
 @media (min-width: 768px) {
   html {
