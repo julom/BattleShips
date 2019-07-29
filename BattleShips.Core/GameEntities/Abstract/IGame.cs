@@ -1,7 +1,10 @@
-﻿namespace BattleShips.Core.GameEntities.Abstract
+﻿using System;
+
+namespace BattleShips.Core.GameEntities.Abstract
 {
     public interface IGame
     {
+        Guid Guid { get; }
         IBoard PlayerBoard { get; }
         IBoard ComputerBoard { get; }
         bool IsWon { get; }

@@ -8,7 +8,7 @@ namespace BattleShips.GameRepository
     public interface IGameRepository
     {
         IGame GetGame(Guid id);
-        IGame CreateGame(Guid id, bool[,] playerFields, IDifficultyLevel difficulty);
+        IGame CreateGame(bool[,] playerFields, IDifficultyLevel difficulty);
         IGame UpdateGame(Guid id, IGame game);
         void DeleteGame(Guid id);
     }

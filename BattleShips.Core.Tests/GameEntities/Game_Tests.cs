@@ -1,11 +1,9 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using BattleShips.Core.Exceptions;
 using BattleShips.Core.GameEntities;
 using BattleShips.Core.GameEntities.Abstract;
 using BattleShips.Core.GameEntities.DifficultyLevels;
 using BattleShips.Core.GameEntities.DifficultyLevels.Abstract;
-using BattleShips.Core.GameEntities.Enums;
 using BattleShips.Core.GameEntities.Factories.Abstract;
 using Moq;
 using NUnit.Framework;
@@ -48,6 +46,16 @@ namespace BattleShips.Core.Tests.GameEntities
 
             mockBoardPlayer.Name = nameof(mockBoardPlayer);
             mockBoardComputer.Name = nameof(mockBoardComputer);
+        }
+
+        [Test]
+        [TestCaseSource(nameof(FieldCoordinates))]
+        public void Game_CreatesNewGuid(bool[,] fields)
+        {
+            game = new Game(fields, mockBoardFactory.Object, new DifficultyLevelEasy());
+
+            Assert.IsNotNull(game.Guid, "Game should create new not empty Guid");
+            Assert.Greater(game.Guid, System.Guid.Empty, "Game should create new not empty Guid");
         }
 
         [Test]

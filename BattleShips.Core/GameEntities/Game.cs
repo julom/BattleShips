@@ -2,12 +2,15 @@
 using BattleShips.Core.GameEntities.Abstract;
 using BattleShips.Core.GameEntities.DifficultyLevels.Abstract;
 using BattleShips.Core.GameEntities.Factories.Abstract;
+using System;
 
 namespace BattleShips.Core.GameEntities
 {
     public class Game : IGame
     {
         private readonly IDifficultyLevel _difficulty;
+
+        public Guid Guid { get; }
 
         public IBoard PlayerBoard { get; private set; }
 
@@ -27,6 +30,7 @@ namespace BattleShips.Core.GameEntities
         public Game(bool[,] playerFields, IBoardFactory boardFactory, IDifficultyLevel difficulty)
         {
             _difficulty = difficulty;
+            Guid = Guid.NewGuid();
             PlayerBoard = boardFactory.CreateBoard(playerFields);
             ComputerBoard = boardFactory.CreateBoard();
         }

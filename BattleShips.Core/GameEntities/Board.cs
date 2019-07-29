@@ -152,7 +152,7 @@ namespace BattleShips.Core.GameEntities
 
             if (fields.Cast<bool>().Count(x => x) != _gameSettings.ShipSizes.Sum())
             {
-                throw new GameArgumentException("Ship fields count not matched with game settings");
+                throw new GameArgumentException("Ship segment count not matched with game settings");
             }
 
             foreach (var shipFields in shipsFields)

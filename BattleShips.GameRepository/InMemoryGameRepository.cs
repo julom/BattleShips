@@ -7,12 +7,12 @@ using BattleShips.Core.GameEntities.Factories.Abstract;
 
 namespace BattleShips.GameRepository
 {
-    public class GameRepository : IGameRepository
+    public class InMemoryGameRepository : IGameRepository
     {
         private readonly IBoardFactory _boardFactory;
         private readonly IDictionary<Guid, IGame> _gameDictionary = new Dictionary<Guid, IGame>();
         
-        public GameRepository(IBoardFactory boardFactory)
+        public InMemoryGameRepository(IBoardFactory boardFactory)
         {
             _boardFactory = boardFactory;
         }
@@ -24,10 +24,10 @@ namespace BattleShips.GameRepository
             return game;
         }
 
-        public IGame CreateGame(Guid id, bool[,] playerFields, IDifficultyLevel difficulty)
+        public IGame CreateGame(bool[,] playerFields, IDifficultyLevel difficulty)
         {
             IGame game = new Game(playerFields, _boardFactory, difficulty);
-            _gameDictionary.Add(id, game);
+            _gameDictionary.Add(game.Guid, game);
             return game;
         }
 

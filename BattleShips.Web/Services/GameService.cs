@@ -1,37 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using BattleShips.Core;
 using BattleShips.Core.GameEntities.Abstract;
+using BattleShips.Core.GameEntities.DifficultyLevels.Abstract;
 using BattleShips.GameRepository;
-using BattleShips.Web.Models;
+using BattleShips.Web.Services.Abstract;
 
 namespace BattleShips.Web.Services
 {
-    public interface IGameService
-    {
-        IGame CurrentGame { get; }
-
-        void InitializeGame(bool[] PlayerShipsPositions);
-        void TakeNextRound(int shootPositionX, int shootPositionY);
-    }
-
     public class GameService : IGameService
     {
         private readonly IGameSettings _gameSettings;
         private readonly IGameRepository _gameRepository;
-        private Guid _currentGameGuid;
 
         public IGame CurrentGame { get; private set; }
-        
+        public Guid? CurrentGameGuid { get => CurrentGame?.Guid; }
+
         public GameService(IGameSettings gameSettings, IGameRepository gameRepository)
         {
             _gameSettings = gameSettings;
             _gameRepository = gameRepository;
         }
 
-        public void InitializeGame(bool[] PlayerShipsPositions)
+        public IGame InitializeGame(bool[] PlayerShipsPositions, IDifficultyLevel difficultyLevel)
         {
             var shipPositions = new bool[_gameSettings.BoardSizeX, _gameSettings.BoardSizeY];
             for (int row = 0; row < _gameSettings.BoardSizeY; row++)
@@ -42,25 +33,27 @@ namespace BattleShips.Web.Services
                 }
             }
 
-            _currentGameGuid = Guid.NewGuid();
-            CurrentGame = _gameRepository.CreateGame(_currentGameGuid, shipPositions, new Core.GameEntities.DifficultyLevels.DifficultyLevelEasy());
+            CurrentGame = _gameRepository.CreateGame(shipPositions, difficultyLevel);
+            return CurrentGame;
         }
 
-        public void TakeNextRound(int shootPositionX, int shootPositionY)
+        public IList<string> TakeNextRound(int shootPositionX, int shootPositionY, Guid gameGuid)
         {
-            CurrentGame = _gameRepository.GetGame(_currentGameGuid);
+            var currentGameStatus = new List<string>();
+            CurrentGame = _gameRepository.GetGame(gameGuid);
 
             var playerResult = CurrentGame.MakePlayerMovement(shootPositionX, shootPositionY);
-            UserCommunicationViewModel UserCommunicationVM = null;
-            UpdateGameStatus(UserCommunicationVM.CurrentGameStatus, "You", playerResult, CurrentGame);
+            UpdateGameStatus(currentGameStatus, "You", playerResult, CurrentGame);
 
             if (!CurrentGame.IsWon)
             {
                 var computerResult = CurrentGame.MakeComputerMovement();
-                UpdateGameStatus(UserCommunicationVM.CurrentGameStatus, "Opponent", computerResult, CurrentGame);
+                UpdateGameStatus(currentGameStatus, "Opponent", computerResult, CurrentGame);
             }
 
-            _gameRepository.UpdateGame(_currentGameGuid, CurrentGame);
+            _gameRepository.UpdateGame(gameGuid, CurrentGame);
+
+            return currentGameStatus;
         }
 
         private static void UpdateGameStatus(IList<string> gameStatusList, string person, ShootResultDTO shootResult, IGame game)

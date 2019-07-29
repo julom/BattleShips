@@ -1,12 +1,9 @@
-﻿using BattleShips.Core;
-using BattleShips.Core.GameEntities;
-using BattleShips.Web.Models;
-using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Diagnostics;
-using BattleShips.GameRepository;
-using BattleShips.Web.Services;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
+using BattleShips.Web.Models;
+using BattleShips.Web.Services.Abstract;
+using BattleShips.Core.GameEntities.DifficultyLevels;
+using System;
 
 namespace BattleShips.Web.Controllers
 {
@@ -39,8 +36,8 @@ namespace BattleShips.Web.Controllers
             try
             {
                 var gameService = _serviceProvider.GetService<IGameService>();
-                gameService.InitializeGame(gameModel.PlayerShipsPositions);
-                gameModel.CurrentGame = gameService.CurrentGame;
+                gameModel.Game = gameService.InitializeGame(gameModel.PlayerShipsPositions, new DifficultyLevelEasy());
+                gameModel.GameGuid = gameService.CurrentGameGuid;
             }
             catch(Exception e)
             {
@@ -51,6 +48,7 @@ namespace BattleShips.Web.Controllers
             return View("GameProgress", gameModel);
         }
 
+        [HttpPost]
         public IActionResult NextTurn(int? shootPositionX, int? shootPositionY, GameModel gameModel)
         {
             if (ModelState.IsValid)
@@ -58,8 +56,8 @@ namespace BattleShips.Web.Controllers
                 try
                 {
                     var gameService = _serviceProvider.GetService<IGameService>();
-                    gameService.TakeNextRound(shootPositionX.Value, shootPositionY.Value);
-                    gameModel.CurrentGame = gameService.CurrentGame;
+                    gameService.TakeNextRound(shootPositionX.Value, shootPositionY.Value, gameModel.GameGuid.Value);
+                    gameModel.Game = gameService.CurrentGame;
                 }
                 catch (Exception e)
                 {
