@@ -1,4 +1,5 @@
-﻿using BattleShips.Core.GameEntities.Abstract;
+﻿using BattleShips.Core.Exceptions;
+using BattleShips.Core.GameEntities.Abstract;
 using BattleShips.Core.GameEntities.DifficultyLevels.Abstract;
 using BattleShips.Core.GameEntities.Factories.Abstract;
 
@@ -32,6 +33,8 @@ namespace BattleShips.Core.GameEntities
 
         public ShootResultDTO MakeComputerMovement()
         {
+            CheckIfGameEnded();
+
             var shotCoordinates = difficulty.ChooseShotCoordinates(PlayerBoard);
 
             var result = PlayerBoard.Shoot(shotCoordinates.Key, shotCoordinates.Value);
@@ -40,8 +43,19 @@ namespace BattleShips.Core.GameEntities
 
         public ShootResultDTO MakePlayerMovement(int shotPositionX, int shotPositionY)
         {
+            CheckIfGameEnded();
+
             var result = ComputerBoard.Shoot(shotPositionX, shotPositionY);
             return result;
+        }
+
+        private void CheckIfGameEnded()
+        {
+            if (IsLost || IsWon)
+            {
+                var endGameResult = IsWon ? "won" : "lost";
+                throw new GameLogicalException($"Game ended. You {endGameResult}. Please start new game.");
+            }
         }
     }
 }
