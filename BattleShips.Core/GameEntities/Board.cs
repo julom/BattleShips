@@ -1,11 +1,10 @@
 ﻿using BattleShips.Core.Exceptions;
 using BattleShips.Core.GameEntities.Abstract;
 using BattleShips.Core.GameEntities.Enums;
-using BattleShips.Core.GameEntities.Structs;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using BattleShips.Core.GameEntities.Factories;
+using BattleShips.Core.GameEntities.Utils.Abstract;
 
 namespace BattleShips.Core.GameEntities
 {
@@ -13,6 +12,7 @@ namespace BattleShips.Core.GameEntities
     {
         private readonly IGameSettings _gameSettings;
         private readonly IShipFactory _shipFactory;
+        private readonly IShipPositionsRandomizer _shipPositionsRandomizer;
 
         public IShip[] Ships { get; private set; }
         public IField[,] Fields { get; private set; }
@@ -32,11 +32,12 @@ namespace BattleShips.Core.GameEntities
             Fields = FillTheFields(Ships);
         }
 
-        public Board(IGameSettings gameSettings, IShipFactory shipFactory)
+        public Board(IGameSettings gameSettings, IShipFactory shipFactory, IShipPositionsRandomizer shipPositionsRandomizer)
         {
             _gameSettings = gameSettings;
             _shipFactory = shipFactory;
-            RandomizeShipsPositions(_gameSettings.ShipSizes);
+            _shipPositionsRandomizer = shipPositionsRandomizer;
+            Ships = _shipPositionsRandomizer.RandomizeShipsPositions();
             Fields = FillTheFields(Ships);
         }
 
@@ -64,60 +65,6 @@ namespace BattleShips.Core.GameEntities
             }
             
             return outputFields;
-        }
-
-        public bool VectorsOverlapsShip(IShip ship, VectorLayout vectors)
-        {
-            return
-                ship.Coordinates.Any(x => vectors.Values.Any(val => val.Equals(x.Position)));
-        }
-
-        public void RandomizeShipsPositions(IList<int> shipSizes)
-        {
-            var existingShipPositions = new List<IShip>();
-            var random = new Random();
-
-            var shipsLeft = new List<int>(_gameSettings.ShipSizes);
-            while (shipsLeft.Any())
-            {
-                var currentShipSize = shipsLeft.Max();
-                var vectorDifference = currentShipSize - 1; // i.e. vector (5,9) is for ship length of 5, but 9 - 5 = 4
-
-                var possiblePositions = new List<IShip>();
-
-                // add possible positions of vertically alligned ships
-                for (int row = 0; row < _gameSettings.BoardSizeX - vectorDifference; row++)
-                {
-                    for (int col = 0; col < _gameSettings.BoardSizeY; col++)
-                    {
-                        var vectorVerticalLayout = new VectorLayout(new ShipVector(row, row + vectorDifference), new ShipVector(col, col));
-                        if (!existingShipPositions.Any(x => VectorsOverlapsShip(x, vectorVerticalLayout)))
-                        {
-                            possiblePositions.Add(_shipFactory.Create(vectorVerticalLayout.VectorX, vectorVerticalLayout.VectorY));
-                        }
-                    }
-                }
-
-                // add possible positions of horizontally alligned ships
-                for (int row = 0; row < _gameSettings.BoardSizeX; row++)
-                {
-                    for (int col = 0; col < _gameSettings.BoardSizeY - vectorDifference; col++)
-                    {
-                        var vectorHorizontalLayout = new VectorLayout(new ShipVector(row, row), new ShipVector(col, col + vectorDifference));
-                        if (!existingShipPositions.Any(x => VectorsOverlapsShip(x, vectorHorizontalLayout)))
-                        {
-                            possiblePositions.Add(_shipFactory.Create(vectorHorizontalLayout.VectorX, vectorHorizontalLayout.VectorY));
-                        }
-                    }
-                }
-
-                var chosenPossiblePosition = possiblePositions[random.Next(possiblePositions.Count)];
-                existingShipPositions.Add(chosenPossiblePosition);
-
-                shipsLeft.Remove(currentShipSize);
-            }
-
-            Ships = existingShipPositions.ToArray();
         }
 
         public IShip[] DefineShipsPositions(bool[,] fields)

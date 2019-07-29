@@ -3,9 +3,9 @@ using BattleShips.Core.GameEntities.Enums;
 using NUnit.Framework;
 using System.Collections.Generic;
 using BattleShips.Core.GameEntities.Factories;
-using BattleShips.Core.GameEntities.Validators;
-using BattleShips.Core.GameEntities.Validators.Abstract;
 using Microsoft.Extensions.DependencyInjection;
+using BattleShips.Core.GameEntities.Utils.Abstract;
+using System;
 
 namespace BattleShips.Core.Tests.GameEntities
 {
@@ -14,19 +14,15 @@ namespace BattleShips.Core.Tests.GameEntities
     {
         private static readonly IGameSettings _gameSettings;
         private static readonly IShipFactory _shipFactory;
+        private static readonly IShipPositionsRandomizer _shipPositionsRandomizer;
         Board board;
 
         static Board_Tests()
         {
-            var services = new ServiceCollection();
-            services.AddScoped<IGameSettings, TestGameSettings>();
-            services.AddTransient<IShipFactory, ShipFactory>();
-            services.AddTransient<IShipCoordinatesValidator, ShipCoordinatesValidator>();
-            services.AddTransient<IShipVectorsValidator, ShipVectorsValidator>();
-            var serviceProvider = services.BuildServiceProvider();
-
+            IServiceProvider serviceProvider = DIContainersTestConfiguration.GetDIServiceProvider();
             _gameSettings = serviceProvider.GetService<IGameSettings>();
             _shipFactory = serviceProvider.GetService<IShipFactory>();
+            _shipPositionsRandomizer = serviceProvider.GetService<IShipPositionsRandomizer>();
         }
 
         public static IEnumerable<TestCaseData> FieldCoordinates()
@@ -53,9 +49,18 @@ namespace BattleShips.Core.Tests.GameEntities
 
         [Test]
         [TestCaseSource(nameof(FieldCoordinates))]
-        public void Board_PopulatesFields(bool[,] fields)
+        public void Board_PopulatesPlayerFields(bool[,] fields)
         {
             board = new Board(fields, _gameSettings, _shipFactory);
+
+            Assert.IsNotNull(board.Fields);
+            Assert.IsNotEmpty(board.Fields);
+        }
+
+        [Test]
+        public void Board_PopulatesComputerFields()
+        {
+            board = new Board(_gameSettings, _shipFactory, _shipPositionsRandomizer);
 
             Assert.IsNotNull(board.Fields);
             Assert.IsNotEmpty(board.Fields);
@@ -95,16 +100,7 @@ namespace BattleShips.Core.Tests.GameEntities
             board.DefineShipsPositions(fields);
 
             Assert.IsNotEmpty(board.Ships);
-        }
-
-        [Test]
-        [Repeat(1000)]
-        public void RandomizeShipsPositions_PopulatesShips()
-        {
-            board = new Board(_gameSettings, _shipFactory);
-
-            Assert.IsNotEmpty(board.Ships);
-        }
+        }        
 
         [Test]
         [TestCaseSource(nameof(FieldCoordinates))]
