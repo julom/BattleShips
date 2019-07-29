@@ -172,7 +172,7 @@ namespace BattleShips.Core.GameEntities
 
         public ShootResultDTO Shoot(int positionX, int positionY)
         {
-            ShootResultDTO result = new ShootResultDTO();
+            ShootResultDTO result = new ShootResultDTO() { PositionX = positionX, PositionY = positionY};
             var hit = Fields[positionX, positionY].Shoot();
             if (hit)
             {
