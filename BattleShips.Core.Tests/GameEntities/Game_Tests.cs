@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using BattleShips.Core.Exceptions;
 using BattleShips.Core.GameEntities;
 using BattleShips.Core.GameEntities.Abstract;
 using BattleShips.Core.GameEntities.DifficultyLevels;
@@ -112,6 +113,42 @@ namespace BattleShips.Core.Tests.GameEntities
             var result = game.MakePlayerMovement(0, 0);
 
             Assert.AreEqual(expectedResult, result);
+        }
+
+        [Test]
+        public void MakePlayerMovement_AfterGameIsLost_ThrowsException()
+        {
+            mockBoardPlayer.Setup(x => x.AreAllShipsSunk).Returns(true);
+            game = new Game(new bool[1, 1], mockBoardFactory.Object, mockDifficultyLevel.Object);
+
+            Assert.Throws<GameLogicalException>(() => game.MakePlayerMovement(0, 0));
+        }
+
+        [Test]
+        public void MakePlayerMovement_AfterGameIsWon_ThrowsException()
+        {
+            mockBoardComputer.Setup(x => x.AreAllShipsSunk).Returns(true);
+            game = new Game(new bool[1, 1], mockBoardFactory.Object, mockDifficultyLevel.Object);
+
+            Assert.Throws<GameLogicalException>(() => game.MakePlayerMovement(0, 0));
+        }
+
+        [Test]
+        public void MakeComputerMovement_AfterGameIsLost_ThrowsException()
+        {
+            mockBoardPlayer.Setup(x => x.AreAllShipsSunk).Returns(true);
+            game = new Game(new bool[1, 1], mockBoardFactory.Object, mockDifficultyLevel.Object);
+
+            Assert.Throws<GameLogicalException>(() => game.MakeComputerMovement());
+        }
+
+        [Test]
+        public void MakeComputerMovement_AfterGameIsWon_ThrowsException()
+        {
+            mockBoardComputer.Setup(x => x.AreAllShipsSunk).Returns(true);
+            game = new Game(new bool[1, 1], mockBoardFactory.Object, mockDifficultyLevel.Object);
+
+            Assert.Throws<GameLogicalException>(() => game.MakeComputerMovement());
         }
     }
 }
