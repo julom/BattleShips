@@ -1,4 +1,6 @@
-﻿<!DOCTYPE html>
+﻿@model GameModel
+
+<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8" />
@@ -46,6 +48,8 @@
     <div class="container">
         <main role="main" class="pb-3">
             @RenderBody()
+
+            @{await Html.RenderPartialAsync("_UserCommunicationPartial", Model.UserCommunicationVM);}
         </main>
     </div>
 

@@ -1,4 +1,4 @@
-﻿@model  GameModel
+﻿@model GameModel
 
 @{
     ViewData["Title"] = "GameProgress";
@@ -9,7 +9,7 @@
 <div class="well well-lg col-md-12">
     <div class="col-md-6">
         <p>Your board:</p>
-        <table id="table-board-user" class="table-board">
+        <table id="table-board-player" class="table-board">
             <tr>
                 <th></th>
                 @for (int col = 65; col < 65 + Model.SizeX; col++)
@@ -28,7 +28,7 @@
                                 <label class="lbl-check">
                                     <button type="button" class="btn btn-check" disabled>
                                         <div class="cell" />
-                                        <param name="cell-param-is-hit" valuetype="bool" value="@Model.CurrentGame.ComputerBoard.Fields[row,col].IsFieldShot" />
+                                        <param name="cell-param-is-hit" class="cell-param-is-hit" valuetype="bool" value="@Model.CurrentGame.PlayerBoard.Fields[row,col].IsFieldShot" />
                                     </button>
                                     <input type="checkbox" class="cbx-check hidden" autocomplete="off" value="@Model.CurrentGame.PlayerBoard.Fields[row,col].IsShipField" />
                                 </label>
@@ -41,9 +41,8 @@
     </div>
     <div class="col-md-6">
         <p>Opponent's board:</p>
-        <form enctype="multipart/form-data" asp-controller="Game" asp-action="NextTurn" method="post">
-            <input hidden name="game" asp-for="CurrentGame" />
-            <input hidden name="gameModel" asp-for="@Model" />
+        <form enctype="multipart/form-data" asp-controller="Game" asp-action="NextTurn" data-ajax="true">
+            <input hidden asp-for="CurrentGameGuid" />
             <table id="table-board-computer" class="table-board">
                 <tr>
                     <th></th>
@@ -61,9 +60,9 @@
                             <td>
                                 <div class="board-cell">
                                     <label class="lbl-check">
-                                        <button type="submit" class="btn btn-check" asp-controller="Game" asp-action="NextTurn" asp-route-id="@(row * Model.SizeY + col)" method="post">
+                                        <button type="submit" class="btn btn-check" asp-controller="Game" asp-action="NextTurn" asp-route-shootPositionX="@row" asp-route-shootPositionY="@col" method="post">
                                             <div class="cell" />
-                                            <param name="cell-param-is-hit" valuetype="bool" value="@Model.CurrentGame.ComputerBoard.Fields[row,col].IsFieldShot" />
+                                            <param name="cell-param-is-hit" class="cell-param-is-hit" valuetype="bool" value="@Model.CurrentGame.ComputerBoard.Fields[row,col].IsFieldShot" />
                                         </button>
                                         <input type="checkbox" class="cbx-check hidden" autocomplete="off" value="@Model.CurrentGame.ComputerBoard.Fields[row,col].IsShipField" />
                                     </label>
@@ -77,3 +76,6 @@
     </div>
 </div>
 
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

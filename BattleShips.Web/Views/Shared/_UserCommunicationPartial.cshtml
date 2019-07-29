@@ -1,0 +1,22 @@
+﻿@model BattleShips.Web.Models.UserCommunicationViewModel
+
+<div>
+    <hr />
+</div>
+<div>
+    @{ var iterator = 0; }
+    @foreach (var item in Model.CurrentGameStatus)
+    {
+        var className = "animate-writing-" + iterator;
+        <div class="@className">@item</div>
+        iterator++;
+    }
+    <div>
+        @foreach (var item in Model.MessageToUser)
+        {
+        <p class="alert-danger">@item</p>
+            <br/>
+        }
+    </div>
+    
+</div>

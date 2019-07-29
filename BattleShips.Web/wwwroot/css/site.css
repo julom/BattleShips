@@ -55,9 +55,56 @@ table tr th {
     animation-duration: 1s;
     border-radius: 50%;
     background-color: red;
-    position: relative center;
-    height: 5px;
-    width: 5px;
+    position: center;
+    height: 6px;
+    width: 6px;
+}
+
+/* UserCommunication
+-------------------------------------------------- */
+.animate-writing-1 {
+    animation-name: writing;
+    animation-duration: 0.5s;
+    animation-delay: 0.5s;
+    animation-fill-mode: both;
+}
+
+.animate-writing-2 {
+    animation-name: writing;
+    animation-duration: 0.5s;
+    animation-delay: 1s;
+    animation-fill-mode: both;
+}
+
+.animate-writing-3 {
+    animation-name: writing;
+    animation-duration: 0.5s;
+    animation-delay: 1.5s;
+    animation-fill-mode: both;
+}
+
+.animate-writing-4 {
+    animation-name: writing;
+    animation-duration: 0.5s;
+    animation-delay: 2s;
+    animation-fill-mode: both;
+}
+
+.animate-writing-5 {
+    animation-name: writing;
+    animation-duration: 0.5s;
+    animation-delay: 2.5s;
+    animation-fill-mode: both;
+}
+
+@keyframes writing {
+    from {
+        color: transparent;
+    }
+
+    to {
+        color: black;
+    }
 }
 
 /* Sticky footer styles

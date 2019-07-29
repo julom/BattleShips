@@ -3,16 +3,25 @@
 
 // Write your JavaScript code.
 
-// function to select ship
+// function to select ships on input board
 $(document).ready(function () {
     $("#table-user-input .lbl-check").click(function () {
 
         $(this).find(".btn-check").toggleClass("ship");
 
-        $(this).find(".cbx-check").prop('checked', function (i, value) {
+        $(this).find(".cbx-check").attr("checked", function (i, value) {
             return !value;
         });
 
+    });
+
+    $("#table-user-input .lbl-check").each(function () {
+
+        var isShipFieldToMark = $(this).find(".cbx-check").attr("checked");
+
+        if (isShipFieldToMark) {
+            $(this).find(".btn-check").toggleClass("ship");
+        };
     });
 });
 
@@ -21,7 +30,6 @@ $(document).ready(function () {
     $(".table-board .lbl-check").click(function () {
 
         $(this).find(".cell").toggleClass("is-hit");
-
 
     });
 });
@@ -36,25 +44,42 @@ $(document).ready(function () {
         buttons.removeClass("ship");
 
         var checkboxes = userTable.find(".cbx-check");
-        checkboxes.prop("checked", false);
+        checkboxes.removeAttr("checked");
 
     });
 });
 
-// function to mark fields after turn
+// function to mark ship fields after turn
+$(document).ready(function () {
+    $("#table-board-player .lbl-check").each(function () {
+
+        var isShipFieldToMark = $(this).find(".cbx-check").val() === "value";
+
+        if (isShipFieldToMark) {
+            $(this).find(".btn-check").toggleClass("ship");
+        };
+
+    });
+});
+
+// function to mark shot fields after turn
 $(document).ready(function () {
     $(".table-board .lbl-check").each(function () {
 
-        console.log("cbx value is " + $(this).find(".cbx-check").val());
-        var isFieldToMark = $(this).find(".cbx-check").val() === "value";
+        var isShootFieldToMark = $(this).find(".cell-param-is-hit").val();
 
-        if (isFieldToMark) {
-            console.log("field is to mark");
-            $(this).find(".btn-check").toggleClass("ship");
+        if (isShootFieldToMark) {
+            $(this).find(".cell").toggleClass("is-hit");
 
-            $(this).prop('checked', function (i, value) {
-                return !value;
-            });
+            $(this).find(".btn.btn-check").prop("disabled", true);
+
+
+            var isShipFieldToMark = $(this).find(".cbx-check").val() === "value";
+
+            if (isShipFieldToMark) {
+                $(this).find(".btn-check").addClass("ship");
+            };
         };
+
     });
 });

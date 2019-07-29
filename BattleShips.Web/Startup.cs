@@ -41,6 +41,9 @@ namespace BattleShips.Web
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
+                    name: "gameInProgress",
+                    template: "{controller=Game}/{action=Index}/{shootPositionX?}/{shootPositionY?}");
+                routes.MapRoute(
                     name: "default",
                     template: "{controller=Game}/{action=Index}/{id?}");
             });
