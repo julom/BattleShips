@@ -1,18 +1,33 @@
 ﻿using BattleShips.Core.GameEntities;
-using BattleShips.Core.GameEntities.Abstract;
 using BattleShips.Core.GameEntities.Enums;
-using Moq;
 using NUnit.Framework;
-using System;
 using System.Collections.Generic;
-using System.Linq;
+using BattleShips.Core.GameEntities.Factories;
+using BattleShips.Core.GameEntities.Validators;
+using BattleShips.Core.GameEntities.Validators.Abstract;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace BattleShips.Core.Tests.GameEntities
 {
     [TestFixture]
     public class Board_Tests
     {
+        private static readonly IGameSettings _gameSettings;
+        private static readonly IShipFactory _shipFactory;
         Board board;
+
+        static Board_Tests()
+        {
+            var services = new ServiceCollection();
+            services.AddScoped<IGameSettings, TestGameSettings>();
+            services.AddTransient<IShipFactory, ShipFactory>();
+            services.AddTransient<IShipCoordinatesValidator, ShipCoordinatesValidator>();
+            services.AddTransient<IShipVectorsValidator, ShipVectorsValidator>();
+            var serviceProvider = services.BuildServiceProvider();
+
+            _gameSettings = serviceProvider.GetService<IGameSettings>();
+            _shipFactory = serviceProvider.GetService<IShipFactory>();
+        }
 
         public static IEnumerable<TestCaseData> FieldCoordinates()
         {
@@ -31,16 +46,16 @@ namespace BattleShips.Core.Tests.GameEntities
         [SetUp]
         public void InitializeGameSettings()
         {
-            GameSettings.ShipSizes = new List<int> { 2 };
-            GameSettings.BoardSizeX = 3;
-            GameSettings.BoardSizeY = 3;
+            _gameSettings.ShipSizes = new List<int> { 2 };
+            _gameSettings.BoardSizeX = 3;
+            _gameSettings.BoardSizeY = 3;
         }
 
         [Test]
         [TestCaseSource(nameof(FieldCoordinates))]
         public void Board_PopulatesFields(bool[,] fields)
         {
-            board = new Board(fields);
+            board = new Board(fields, _gameSettings, _shipFactory);
 
             Assert.IsNotNull(board.Fields);
             Assert.IsNotEmpty(board.Fields);
@@ -50,7 +65,7 @@ namespace BattleShips.Core.Tests.GameEntities
         [TestCaseSource(nameof(FieldCoordinates))]
         public void AreAllShipsSunk_AllShipsSunk_ReturnsTrue(bool[,] fields)
         {
-            board = new Board(fields);
+            board = new Board(fields, _gameSettings, _shipFactory);
 
             board.Shoot(1, 1);
             board.Shoot(1, 2);
@@ -64,7 +79,7 @@ namespace BattleShips.Core.Tests.GameEntities
         [TestCaseSource(nameof(FieldCoordinates))]
         public void AreAllShipsSunk_NoShipsSunk_ReturnsFalse(bool[,] fields)
         {
-            board = new Board(fields);
+            board = new Board(fields, _gameSettings, _shipFactory);
 
             board.Shoot(1, 1);
 
@@ -75,7 +90,7 @@ namespace BattleShips.Core.Tests.GameEntities
         [TestCaseSource(nameof(FieldCoordinates))]
         public void DefineShipsPositions_PopulatesShips(bool[,] fields)
         {
-            board = new Board(fields);
+            board = new Board(fields, _gameSettings, _shipFactory);
 
             board.DefineShipsPositions(fields);
 
@@ -86,7 +101,7 @@ namespace BattleShips.Core.Tests.GameEntities
         [Repeat(1000)]
         public void RandomizeShipsPositions_PopulatesShips()
         {
-            board = new Board();
+            board = new Board(_gameSettings, _shipFactory);
 
             Assert.IsNotEmpty(board.Ships);
         }
@@ -95,7 +110,7 @@ namespace BattleShips.Core.Tests.GameEntities
         [TestCaseSource(nameof(FieldCoordinates))]
         public void Shoot_AtShipField_ReturnsTrue(bool[,] fields)
         {
-            board = new Board(fields);
+            board = new Board(fields, _gameSettings, _shipFactory);
             var positionX = 1;
             var positionY = 1;
 
@@ -108,7 +123,7 @@ namespace BattleShips.Core.Tests.GameEntities
         [TestCaseSource(nameof(FieldCoordinates))]
         public void Shoot_AtShipField_ChangesFieldTypeToShipHit(bool[,] fields)
         {
-            board = new Board(fields);
+            board = new Board(fields, _gameSettings, _shipFactory);
             var positionX = 1;
             var positionY = 1;
 
@@ -121,7 +136,7 @@ namespace BattleShips.Core.Tests.GameEntities
         [TestCaseSource(nameof(FieldCoordinates))]
         public void Shoot_AtEmptyField_ReturnsFalse(bool[,] fields)
         {
-            board = new Board(fields);
+            board = new Board(fields, _gameSettings, _shipFactory);
             var positionX = 0;
             var positionY = 0;
 
@@ -134,7 +149,7 @@ namespace BattleShips.Core.Tests.GameEntities
         [TestCaseSource(nameof(FieldCoordinates))]
         public void Shoot_AtEmptyField_ChangesFieldTypeToMissedShot(bool[,] fields)
         {
-            board = new Board(fields);
+            board = new Board(fields, _gameSettings, _shipFactory);
             var positionX = 0;
             var positionY = 0;
 

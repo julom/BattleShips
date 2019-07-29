@@ -1,4 +1,11 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using BattleShips.Core;
+using BattleShips.Core.GameEntities.Factories;
+using BattleShips.Core.GameEntities.Factories.Abstract;
+using BattleShips.Core.GameEntities.Validators;
+using BattleShips.Core.GameEntities.Validators.Abstract;
+using BattleShips.GameRepository;
+using BattleShips.Web.Services;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -19,6 +26,14 @@ namespace BattleShips.Web
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+
+            services.AddSingleton<IGameSettings, GameSettings>();
+            services.AddSingleton<IGameRepository, GameRepository.GameRepository>();
+            services.AddSingleton<IGameService, GameService>();
+            services.AddTransient<IShipFactory, ShipFactory>();
+            services.AddTransient<IBoardFactory, BoardFactory>();
+            services.AddTransient<IShipCoordinatesValidator, ShipCoordinatesValidator>();
+            services.AddTransient<IShipVectorsValidator, ShipVectorsValidator>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

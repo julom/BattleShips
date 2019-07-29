@@ -5,15 +5,17 @@ using BattleShips.Core.GameEntities.Structs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using BattleShips.Core.GameEntities.Factories;
 
 namespace BattleShips.Core.GameEntities
 {
     public class Board : IBoard
     {
+        private readonly IGameSettings _gameSettings;
+        private readonly IShipFactory _shipFactory;
+
         public IShip[] Ships { get; private set; }
-
         public IField[,] Fields { get; private set; }
-
         public bool AreAllShipsSunk
         {
             get
@@ -22,21 +24,25 @@ namespace BattleShips.Core.GameEntities
             }
         }
 
-        public Board(bool[,] fields)
+        public Board(bool[,] fields, IGameSettings gameSettings, IShipFactory shipFactory)
         {
+            _gameSettings = gameSettings;
+            _shipFactory = shipFactory;
             Ships = DefineShipsPositions(fields);
             Fields = FillTheFields(Ships);
         }
 
-        public Board()
+        public Board(IGameSettings gameSettings, IShipFactory shipFactory)
         {
-            RandomizeShipsPositions(GameSettings.ShipSizes);
+            _gameSettings = gameSettings;
+            _shipFactory = shipFactory;
+            RandomizeShipsPositions(_gameSettings.ShipSizes);
             Fields = FillTheFields(Ships);
         }
 
         private IField[,] FillTheFields(IShip[] ships)
         {
-            IField[,] outputFields = new Field[GameSettings.BoardSizeX, GameSettings.BoardSizeY];
+            IField[,] outputFields = new Field[_gameSettings.BoardSizeX, _gameSettings.BoardSizeY];
 
             foreach (var ship in ships)
             {
@@ -46,9 +52,9 @@ namespace BattleShips.Core.GameEntities
                 }
             }
             
-            for (int row = 0; row < GameSettings.BoardSizeX; row++)
+            for (int row = 0; row < _gameSettings.BoardSizeX; row++)
             {
-                for (int col = 0; col < GameSettings.BoardSizeY; col++)
+                for (int col = 0; col < _gameSettings.BoardSizeY; col++)
                 {
                     if (outputFields[row, col] == null)
                     {
@@ -71,7 +77,7 @@ namespace BattleShips.Core.GameEntities
             var existingShipPositions = new List<IShip>();
             var random = new Random();
 
-            var shipsLeft = new List<int>(GameSettings.ShipSizes);
+            var shipsLeft = new List<int>(_gameSettings.ShipSizes);
             while (shipsLeft.Any())
             {
                 var currentShipSize = shipsLeft.Max();
@@ -80,27 +86,27 @@ namespace BattleShips.Core.GameEntities
                 var possiblePositions = new List<IShip>();
 
                 // add possible positions of vertically alligned ships
-                for (int row = 0; row < GameSettings.BoardSizeX - vectorDifference; row++)
+                for (int row = 0; row < _gameSettings.BoardSizeX - vectorDifference; row++)
                 {
-                    for (int col = 0; col < GameSettings.BoardSizeY; col++)
+                    for (int col = 0; col < _gameSettings.BoardSizeY; col++)
                     {
                         var vectorVerticalLayout = new VectorLayout(new ShipVector(row, row + vectorDifference), new ShipVector(col, col));
                         if (!existingShipPositions.Any(x => VectorsOverlapsShip(x, vectorVerticalLayout)))
                         {
-                            possiblePositions.Add(new Ship(vectorVerticalLayout.VectorX, vectorVerticalLayout.VectorY));
+                            possiblePositions.Add(_shipFactory.Create(vectorVerticalLayout.VectorX, vectorVerticalLayout.VectorY));
                         }
                     }
                 }
 
                 // add possible positions of horizontally alligned ships
-                for (int row = 0; row < GameSettings.BoardSizeX; row++)
+                for (int row = 0; row < _gameSettings.BoardSizeX; row++)
                 {
-                    for (int col = 0; col < GameSettings.BoardSizeY - vectorDifference; col++)
+                    for (int col = 0; col < _gameSettings.BoardSizeY - vectorDifference; col++)
                     {
                         var vectorHorizontalLayout = new VectorLayout(new ShipVector(row, row), new ShipVector(col, col + vectorDifference));
                         if (!existingShipPositions.Any(x => VectorsOverlapsShip(x, vectorHorizontalLayout)))
                         {
-                            possiblePositions.Add(new Ship(vectorHorizontalLayout.VectorX, vectorHorizontalLayout.VectorY));
+                            possiblePositions.Add(_shipFactory.Create(vectorHorizontalLayout.VectorX, vectorHorizontalLayout.VectorY));
                         }
                     }
                 }
@@ -116,8 +122,8 @@ namespace BattleShips.Core.GameEntities
 
         public IShip[] DefineShipsPositions(bool[,] fields)
         {
-            var ships = new List<Ship>();
-            var shipsFields = new List<List<KeyValuePair<int, int>>>(GameSettings.ShipSizes.Count);
+            var ships = new List<IShip>();
+            var shipsFields = new List<List<KeyValuePair<int, int>>>(_gameSettings.ShipSizes.Count);
 
             for (int row = 0; row < fields.GetLength(1); row++)
             {
@@ -139,19 +145,19 @@ namespace BattleShips.Core.GameEntities
                 }
             }
 
-            if (shipsFields.Count != GameSettings.ShipSizes.Count)
+            if (shipsFields.Count != _gameSettings.ShipSizes.Count)
             {
                 throw new GameArgumentException("Ship count not matched with game settings");
             }
 
-            if (fields.Cast<bool>().Count(x => x) != GameSettings.ShipSizes.Sum())
+            if (fields.Cast<bool>().Count(x => x) != _gameSettings.ShipSizes.Sum())
             {
                 throw new GameArgumentException("Ship fields count not matched with game settings");
             }
 
             foreach (var shipFields in shipsFields)
             {
-                var ship = new Ship(shipFields);
+                var ship = _shipFactory.Create(shipFields);
                 ships.Add(ship);
             }            
 

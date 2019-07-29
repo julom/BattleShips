@@ -1,20 +1,21 @@
 ﻿using BattleShips.Core.GameEntities;
 using BattleShips.Core.GameEntities.Abstract;
 using BattleShips.Core.GameEntities.DifficultyLevels.Abstract;
-using BattleShips.Core.GameEntities.Factories;
 using System;
 using System.Collections.Generic;
+using BattleShips.Core.GameEntities.Factories.Abstract;
 
 namespace BattleShips.GameRepository
 {
-    public class GameRepository
+    public class GameRepository : IGameRepository
     {
-        private GameRepository() { }
-
-        public static GameRepository Instance { get; } = new GameRepository();
-
-
-        private Dictionary<Guid, IGame> _gameDictionary = new Dictionary<Guid, IGame>();
+        private readonly IBoardFactory _boardFactory;
+        private readonly IDictionary<Guid, IGame> _gameDictionary = new Dictionary<Guid, IGame>();
+        
+        public GameRepository(IBoardFactory boardFactory)
+        {
+            _boardFactory = boardFactory;
+        }
 
         public IGame GetGame(Guid id)
         {
@@ -25,7 +26,7 @@ namespace BattleShips.GameRepository
 
         public IGame CreateGame(Guid id, bool[,] playerFields, IDifficultyLevel difficulty)
         {
-            IGame game = new Game(playerFields, new BoardFactory(), difficulty);
+            IGame game = new Game(playerFields, _boardFactory, difficulty);
             _gameDictionary.Add(id, game);
             return game;
         }

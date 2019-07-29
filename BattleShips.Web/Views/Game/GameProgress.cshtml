@@ -1,4 +1,5 @@
 ﻿@model GameModel
+@inject IGameSettings GameSettings
 
 @{
     ViewData["Title"] = "GameProgress";
@@ -12,16 +13,16 @@
         <table id="table-board-player" class="table-board">
             <tr>
                 <th></th>
-                @for (int col = 65; col < 65 + Model.SizeX; col++)
+                @for (int col = 65; col < 65 + GameSettings.BoardSizeX; col++)
                 {
                     <th>&#@col;</th>
                 }
             </tr>
-            @for (int row = 0; row < Model.SizeY; row++)
+            @for (int row = 0; row < GameSettings.BoardSizeY; row++)
             {
                 <tr>
                     <th>@(row + 1)</th>
-                    @for (int col = 0; col < Model.SizeX; col++)
+                    @for (int col = 0; col < GameSettings.BoardSizeX; col++)
                     {
                         <td>
                             <div class="board-cell">
@@ -46,16 +47,16 @@
             <table id="table-board-computer" class="table-board">
                 <tr>
                     <th></th>
-                    @for (int col = 65; col < 65 + Model.SizeX; col++)
+                    @for (int col = 65; col < 65 + GameSettings.BoardSizeX; col++)
                     {
                         <th>&#@col;</th>
                     }
                 </tr>
-                @for (int row = 0; row < Model.SizeY; row++)
+                @for (int row = 0; row < GameSettings.BoardSizeY; row++)
                 {
                     <tr>
                         <th>@(row + 1)</th>
-                        @for (int col = 0; col < Model.SizeX; col++)
+                        @for (int col = 0; col < GameSettings.BoardSizeX; col++)
                         {
                             <td>
                                 <div class="board-cell">

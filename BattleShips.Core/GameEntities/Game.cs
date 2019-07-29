@@ -7,7 +7,7 @@ namespace BattleShips.Core.GameEntities
 {
     public class Game : IGame
     {
-        private readonly IDifficultyLevel difficulty;
+        private readonly IDifficultyLevel _difficulty;
 
         public IBoard PlayerBoard { get; private set; }
 
@@ -26,16 +26,16 @@ namespace BattleShips.Core.GameEntities
 
         public Game(bool[,] playerFields, IBoardFactory boardFactory, IDifficultyLevel difficulty)
         {
+            _difficulty = difficulty;
             PlayerBoard = boardFactory.CreateBoard(playerFields);
             ComputerBoard = boardFactory.CreateBoard();
-            this.difficulty = difficulty;
         }
 
         public ShootResultDTO MakeComputerMovement()
         {
             CheckIfGameEnded();
 
-            var shotCoordinates = difficulty.ChooseShotCoordinates(PlayerBoard);
+            var shotCoordinates = _difficulty.ChooseShotCoordinates(PlayerBoard);
 
             var result = PlayerBoard.Shoot(shotCoordinates.Key, shotCoordinates.Value);
             return result;

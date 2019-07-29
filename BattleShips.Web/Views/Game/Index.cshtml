@@ -1,4 +1,5 @@
 ﻿@model GameModel
+@inject IGameSettings GameSettings
 
 @{
     ViewData["Title"] = "Welcome";
@@ -17,22 +18,22 @@
             <table id="table-user-input">
                 <tr>
                     <th></th>
-                    @for (int col = 65; col < 65 + Model.SizeX; col++)
+                    @for (int col = 65; col < 65 + GameSettings.BoardSizeX; col++)
                     {
                         <th>&#@col;</th>
                     }
                 </tr>
-                @for (int row = 0; row < Model.SizeY; row++)
+                @for (int row = 0; row < GameSettings.BoardSizeY; row++)
                 {
                     <tr>
                         <th>@(row + 1)</th>
-                        @for (int col = 0; col < Model.SizeX; col++)
+                        @for (int col = 0; col < GameSettings.BoardSizeX; col++)
                         {
                             <td>
                                 <div class="board-cell">
                                     <label class="lbl-check">
                                         <button type="button" class="btn btn-check" />
-                                        <input type="checkbox" class="cbx-check hidden" autocomplete="off" asp-for="@Model.PlayerShipsPositions[row * Model.SizeY + col]" />
+                                        <input type="checkbox" class="cbx-check hidden" autocomplete="off" asp-for="@Model.PlayerShipsPositions[row * GameSettings.BoardSizeY + col]" />
                                     </label>
                                 </div>
                             </td>
@@ -50,7 +51,7 @@
         </div>
     </div>
 
-    <button type="submit" class="btn btn-primary" name="startGame" asp-controller="Game" asp-action="Create" method="post">Start</button>
+    <button type="submit" class="btn btn-primary" name="startGame" asp-controller="Game" asp-action="Index" method="post">Start</button>
     <button type="reset" class="btn btn-primary" id="btn-reset" value="Reset">Clear</button>
 </form>
 

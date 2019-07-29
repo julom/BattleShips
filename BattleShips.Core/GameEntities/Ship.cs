@@ -21,16 +21,16 @@ namespace BattleShips.Core.GameEntities
             get { return Coordinates.All(x => x.FieldType == FieldTypes.ShipHit); }
         }
 
-        public Ship(ShipVector vectorX, ShipVector vectorY, IShipVectorsValidator vectorsValidator = null)
+        public Ship(ShipVector vectorX, ShipVector vectorY, IShipVectorsValidator vectorsValidator)
         {
-            this.vectorsValidator = vectorsValidator ?? new ShipVectorsValidator();
+            this.vectorsValidator = vectorsValidator;
             Coordinates = GetCoordinates(vectorX, vectorY);
             Size = Coordinates.Count;
         }
 
-        public Ship(IList<KeyValuePair<int, int>> coordinates, IShipCoordinatesValidator coordinatesValidator = null)
+        public Ship(IList<KeyValuePair<int, int>> coordinates, IShipCoordinatesValidator coordinatesValidator)
         {
-            this.coordinatesValidator = coordinatesValidator ?? new ShipCoordinatesValidator();
+            this.coordinatesValidator = coordinatesValidator;
             Coordinates = GetCoordinates(coordinates);
             Size = Coordinates.Count;
         }

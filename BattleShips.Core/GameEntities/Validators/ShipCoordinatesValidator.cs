@@ -9,6 +9,13 @@ namespace BattleShips.Core.GameEntities.Validators
     {
         const int AbsoluteMinimumNumberOfCoordinates = 2;
 
+        private readonly IGameSettings _gameSettings;
+
+        public ShipCoordinatesValidator(IGameSettings gameSettings)
+        {
+            _gameSettings = gameSettings;
+        }
+
         public bool Validate(IList<KeyValuePair<int, int>> coordinates)
         {
             if (ValidateCoordinatesNumber(coordinates))
@@ -29,11 +36,11 @@ namespace BattleShips.Core.GameEntities.Validators
             return false;
         }
 
-        private static bool ValidateCoordinatesNumber(IList<KeyValuePair<int, int>> coordinates)
+        private bool ValidateCoordinatesNumber(IList<KeyValuePair<int, int>> coordinates)
         {
             if (coordinates.Count < AbsoluteMinimumNumberOfCoordinates ||
-                coordinates.Count < GameSettings.ShipSizes.Min() ||
-                coordinates.Count > GameSettings.ShipSizes.Max())
+                coordinates.Count < _gameSettings.ShipSizes.Min() ||
+                coordinates.Count > _gameSettings.ShipSizes.Max())
             {
                 return false;
             }

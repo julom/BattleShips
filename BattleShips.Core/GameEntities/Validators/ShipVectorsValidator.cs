@@ -8,6 +8,14 @@ namespace BattleShips.Core.GameEntities.Validators
     {
         const int AbsoluteMinimumVectorSize = 2;
 
+        private readonly IGameSettings _gameSettings;
+
+        public ShipVectorsValidator(IGameSettings gameSettings)
+        {
+            _gameSettings = gameSettings;
+        }
+
+
         public bool Validate(ShipVector vectorX, ShipVector vectorY)
         {
             if (ValidateVectorsSize(vectorX, vectorY))
@@ -18,19 +26,19 @@ namespace BattleShips.Core.GameEntities.Validators
             return false;
         }
 
-        private static bool ValidateVectorsSize(ShipVector vectorX, ShipVector vectorY)
+        private bool ValidateVectorsSize(ShipVector vectorX, ShipVector vectorY)
         {
             if (vectorX.Size < AbsoluteMinimumVectorSize && vectorY.Size < AbsoluteMinimumVectorSize)
             {
                 // at least one vector should have absolute minimum size
                 return false;
             }
-            if (vectorX.Size < GameSettings.ShipSizes.Min() && vectorY.Size < GameSettings.ShipSizes.Min())
+            if (vectorX.Size < _gameSettings.ShipSizes.Min() && vectorY.Size < _gameSettings.ShipSizes.Min())
             {
                 // at least one vector should have game defined minimum size
                 return false;
             }
-            if (vectorX.Size > GameSettings.ShipSizes.Max() || vectorY.Size > GameSettings.ShipSizes.Max())
+            if (vectorX.Size > _gameSettings.ShipSizes.Max() || vectorY.Size > _gameSettings.ShipSizes.Max())
             {
                 // neithers of vectors cannot have size bigger than game defined
                 return false;

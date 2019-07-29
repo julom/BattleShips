@@ -2,11 +2,11 @@
 
 namespace BattleShips.Core
 {
-    public static class GameSettings
+    public class GameSettings : IGameSettings
     {
-        public static int BoardSizeX = 10;
-        public static int BoardSizeY = 10;
+        public int BoardSizeX { get => 10; set{} }
+        public int BoardSizeY { get => 10; set{} }
 
-        public static IList<int> ShipSizes = new List<int> {5, 4, 4};
+        public IList<int> ShipSizes { get => new List<int> {5, 4, 4}; set{} }
     }
 }

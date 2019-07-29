@@ -4,11 +4,21 @@ using BattleShips.Web.Models;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Diagnostics;
+using BattleShips.GameRepository;
+using BattleShips.Web.Services;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace BattleShips.Web.Controllers
 {
     public class GameController : Controller
     {
+        private readonly IServiceProvider _serviceProvider;
+
+        public GameController(IServiceProvider serviceProvider)
+        {
+            _serviceProvider = serviceProvider;
+        }
+
         [HttpGet]
         public IActionResult Index()
         {
@@ -28,7 +38,9 @@ namespace BattleShips.Web.Controllers
         {
             try
             {
-                gameModel.InitializeGame();
+                var gameService = _serviceProvider.GetService<IGameService>();
+                gameService.InitializeGame(gameModel.PlayerShipsPositions);
+                gameModel.CurrentGame = gameService.CurrentGame;
             }
             catch(Exception e)
             {
@@ -45,7 +57,9 @@ namespace BattleShips.Web.Controllers
             {
                 try
                 {
-                    gameModel.TakeNextRound(shootPositionX.Value, shootPositionY.Value);
+                    var gameService = _serviceProvider.GetService<IGameService>();
+                    gameService.TakeNextRound(shootPositionX.Value, shootPositionY.Value);
+                    gameModel.CurrentGame = gameService.CurrentGame;
                 }
                 catch (Exception e)
                 {
