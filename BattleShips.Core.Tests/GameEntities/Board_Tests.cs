@@ -6,6 +6,8 @@ using BattleShips.Core.GameEntities.Factories;
 using Microsoft.Extensions.DependencyInjection;
 using BattleShips.Core.GameEntities.Utils.Abstract;
 using System;
+using BattleShips.Core.GameEntities.Abstract;
+using Moq;
 
 namespace BattleShips.Core.Tests.GameEntities
 {
@@ -16,6 +18,7 @@ namespace BattleShips.Core.Tests.GameEntities
         private static readonly IShipFactory _shipFactory;
         private static readonly IShipPositionsRandomizer _shipPositionsRandomizer;
         Board board;
+        Mock<IShip> _mockShip;
 
         static Board_Tests()
         {
@@ -25,33 +28,35 @@ namespace BattleShips.Core.Tests.GameEntities
             _shipPositionsRandomizer = serviceProvider.GetService<IShipPositionsRandomizer>();
         }
 
-        public static IEnumerable<TestCaseData> FieldCoordinates()
+        public static IEnumerable<TestCaseData> ShipsCoordinates()
         {
-            yield return new TestCaseData(new bool[,] { 
-                { false, false, false }, 
-                { false, true, false },
-                { false, true, false }
-            });
-            yield return new TestCaseData(new bool[,] {
-                { false, false, false },
-                { false, true, true },
-                { false, false, false }
-            });
+            yield return new TestCaseData(new List<IField>() {
+                    new Field(FieldTypes.Ship, 1, 1),
+                    new Field(FieldTypes.Ship, 1, 2)
+                });
+
+            yield return new TestCaseData(new List<IField>() {
+                    new Field(FieldTypes.Ship, 1, 1),
+                    new Field(FieldTypes.Ship, 2, 1)
+                });
         }
 
         [SetUp]
         public void InitializeGameSettings()
         {
+            _mockShip = new Mock<IShip>();
+            _mockShip.Setup(x => x.Size).Returns(2);
             _gameSettings.ShipSizes = new List<int> { 2 };
             _gameSettings.BoardSizeX = 3;
             _gameSettings.BoardSizeY = 3;
         }
 
         [Test]
-        [TestCaseSource(nameof(FieldCoordinates))]
-        public void Board_PopulatesPlayerFields(bool[,] fields)
+        [TestCaseSource(nameof(ShipsCoordinates))]
+        public void Board_PopulatesPlayerFields(IList<IField> fields)
         {
-            board = new Board(fields, _gameSettings, _shipFactory);
+            _mockShip.Setup(x => x.Coordinates).Returns(fields);
+            board = new Board(new IShip[] { _mockShip.Object }, _gameSettings, _shipFactory);
 
             Assert.IsNotNull(board.Fields);
             Assert.IsNotEmpty(board.Fields);
@@ -67,10 +72,13 @@ namespace BattleShips.Core.Tests.GameEntities
         }
 
         [Test]
-        [TestCaseSource(nameof(FieldCoordinates))]
-        public void AreAllShipsSunk_AllShipsSunk_ReturnsTrue(bool[,] fields)
+        [TestCaseSource(nameof(ShipsCoordinates))]
+        public void AreAllShipsSunk_AllShipsSunk_ReturnsTrue(IList<IField> fields)
         {
-            board = new Board(fields, _gameSettings, _shipFactory);
+            _mockShip.Setup(x => x.Coordinates).Returns(fields);
+            _mockShip.Setup(x => x.TryToShoot(It.IsAny<int>(), It.IsAny<int>())).Returns(true);
+            _mockShip.Setup(x => x.IsSunk).Returns(true);
+            board = new Board(new IShip[] { _mockShip.Object }, _gameSettings, _shipFactory);
 
             board.Shoot(1, 1);
             board.Shoot(1, 2);
@@ -81,32 +89,26 @@ namespace BattleShips.Core.Tests.GameEntities
         }
 
         [Test]
-        [TestCaseSource(nameof(FieldCoordinates))]
-        public void AreAllShipsSunk_NoShipsSunk_ReturnsFalse(bool[,] fields)
+        [TestCaseSource(nameof(ShipsCoordinates))]
+        public void AreAllShipsSunk_NoShipsSunk_ReturnsFalse(IList<IField> fields)
         {
-            board = new Board(fields, _gameSettings, _shipFactory);
+            _mockShip.Setup(x => x.Coordinates).Returns(fields);
+            _mockShip.Setup(x => x.TryToShoot(It.IsAny<int>(), It.IsAny<int>())).Returns(true);
+            _mockShip.Setup(x => x.IsSunk).Returns(false);
+            board = new Board(new IShip[] { _mockShip.Object }, _gameSettings, _shipFactory);
 
             board.Shoot(1, 1);
 
             Assert.IsFalse(board.AreAllShipsSunk);
-        }
+        }    
 
         [Test]
-        [TestCaseSource(nameof(FieldCoordinates))]
-        public void DefineShipsPositions_PopulatesShips(bool[,] fields)
+        [TestCaseSource(nameof(ShipsCoordinates))]
+        public void Shoot_AtShipField_ReturnsTrue(IList<IField> fields)
         {
-            board = new Board(fields, _gameSettings, _shipFactory);
-
-            board.DefineShipsPositions(fields);
-
-            Assert.IsNotEmpty(board.Ships);
-        }        
-
-        [Test]
-        [TestCaseSource(nameof(FieldCoordinates))]
-        public void Shoot_AtShipField_ReturnsTrue(bool[,] fields)
-        {
-            board = new Board(fields, _gameSettings, _shipFactory);
+            _mockShip.Setup(x => x.Coordinates).Returns(fields);
+            _mockShip.Setup(x => x.TryToShoot(It.IsAny<int>(), It.IsAny<int>())).Returns(true);
+            board = new Board(new IShip[] { _mockShip.Object }, _gameSettings, _shipFactory);
             var positionX = 1;
             var positionY = 1;
 
@@ -116,42 +118,18 @@ namespace BattleShips.Core.Tests.GameEntities
         }
 
         [Test]
-        [TestCaseSource(nameof(FieldCoordinates))]
-        public void Shoot_AtShipField_ChangesFieldTypeToShipHit(bool[,] fields)
+        [TestCaseSource(nameof(ShipsCoordinates))]
+        public void Shoot_AtEmptyField_ReturnsFalse(IList<IField> fields)
         {
-            board = new Board(fields, _gameSettings, _shipFactory);
-            var positionX = 1;
-            var positionY = 1;
-
-            var result = board.Shoot(positionX, positionY);
-
-            Assert.AreEqual(FieldTypes.ShipHit, board.Fields[positionX,positionY].FieldType);
-        }
-
-        [Test]
-        [TestCaseSource(nameof(FieldCoordinates))]
-        public void Shoot_AtEmptyField_ReturnsFalse(bool[,] fields)
-        {
-            board = new Board(fields, _gameSettings, _shipFactory);
+            _mockShip.Setup(x => x.Coordinates).Returns(fields);
+            _mockShip.Setup(x => x.TryToShoot(It.IsAny<int>(), It.IsAny<int>())).Returns(false);
+            board = new Board(new IShip[] { _mockShip.Object }, _gameSettings, _shipFactory);
             var positionX = 0;
             var positionY = 0;
 
             var result = board.Shoot(positionX, positionY);
 
             Assert.IsFalse(result.IsShipHit);
-        }
-
-        [Test]
-        [TestCaseSource(nameof(FieldCoordinates))]
-        public void Shoot_AtEmptyField_ChangesFieldTypeToMissedShot(bool[,] fields)
-        {
-            board = new Board(fields, _gameSettings, _shipFactory);
-            var positionX = 0;
-            var positionY = 0;
-
-            var result = board.Shoot(positionX, positionY);
-
-            Assert.AreEqual(FieldTypes.MissedShot, board.Fields[positionX, positionY].FieldType);
         }
     }
 }

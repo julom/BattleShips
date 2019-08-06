@@ -24,9 +24,9 @@ namespace BattleShips.GameRepository
             return game;
         }
 
-        public IGame CreateGame(bool[,] playerFields, IDifficultyLevel difficulty)
+        public IGame CreateGame(IShip[] playerShips, IDifficultyLevel difficulty)
         {
-            IGame game = new Game(playerFields, _boardFactory, difficulty);
+            IGame game = new Game(playerShips, _boardFactory, difficulty);
             _gameDictionary.Add(game.Guid, game);
             return game;
         }

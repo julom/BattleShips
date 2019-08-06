@@ -27,11 +27,11 @@ namespace BattleShips.Core.GameEntities
         }
 
 
-        public Game(bool[,] playerFields, IBoardFactory boardFactory, IDifficultyLevel difficulty)
+        public Game(IShip[] playerShips, IBoardFactory boardFactory, IDifficultyLevel difficulty)
         {
             _difficulty = difficulty;
             Guid = Guid.NewGuid();
-            PlayerBoard = boardFactory.CreateBoard(playerFields);
+            PlayerBoard = boardFactory.CreateBoard(playerShips);
             ComputerBoard = boardFactory.CreateBoard();
         }
 

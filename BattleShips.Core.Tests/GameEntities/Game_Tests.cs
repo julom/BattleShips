@@ -4,6 +4,7 @@ using BattleShips.Core.GameEntities;
 using BattleShips.Core.GameEntities.Abstract;
 using BattleShips.Core.GameEntities.DifficultyLevels;
 using BattleShips.Core.GameEntities.DifficultyLevels.Abstract;
+using BattleShips.Core.GameEntities.Enums;
 using BattleShips.Core.GameEntities.Factories.Abstract;
 using Moq;
 using NUnit.Framework;
@@ -18,19 +19,19 @@ namespace BattleShips.Core.Tests.GameEntities
         Mock<IBoard> mockBoardPlayer;
         Mock<IBoard> mockBoardComputer;
         Mock<IDifficultyLevel> mockDifficultyLevel;
+        Mock<IShip> mockShip;
 
-        public static IEnumerable<TestCaseData> FieldCoordinates()
+        public static IEnumerable<TestCaseData> ShipsCoordinates()
         {
-            yield return new TestCaseData(new bool[,] {
-                { false, false, false },
-                { false, true, false },
-                { false, true, false }
-            });
-            yield return new TestCaseData(new bool[,] {
-                { false, false, false },
-                { false, true, true },
-                { false, false, false }
-            });
+            yield return new TestCaseData(new List<IField>() {
+                    new Field(FieldTypes.Ship, 1, 1),
+                    new Field(FieldTypes.Ship, 1, 2)
+                });
+
+            yield return new TestCaseData(new List<IField>() {
+                    new Field(FieldTypes.Ship, 1, 1),
+                    new Field(FieldTypes.Ship, 2, 1)
+                });
         }
 
         [SetUp]
@@ -40,50 +41,50 @@ namespace BattleShips.Core.Tests.GameEntities
             mockBoardPlayer = new Mock<IBoard>();
             mockBoardComputer = new Mock<IBoard>();
             mockDifficultyLevel = new Mock<IDifficultyLevel>();
+            mockShip = new Mock<IShip>();
 
-            mockBoardFactory.Setup(x => x.CreateBoard(It.IsAny<bool[,]>())).Returns(mockBoardComputer.Object);
-            mockBoardFactory.Setup(x => x.CreateBoard(It.IsNotNull<bool[,]>())).Returns(mockBoardPlayer.Object);
+            mockShip.Setup(x => x.Size).Returns(2);
+            mockBoardFactory.Setup(x => x.CreateBoard(It.IsAny<IShip[]>())).Returns(mockBoardComputer.Object);
+            mockBoardFactory.Setup(x => x.CreateBoard(It.IsNotNull<IShip[]>())).Returns(mockBoardPlayer.Object);
 
             mockBoardPlayer.Name = nameof(mockBoardPlayer);
             mockBoardComputer.Name = nameof(mockBoardComputer);
         }
 
         [Test]
-        [TestCaseSource(nameof(FieldCoordinates))]
-        public void Game_CreatesNewGuid(bool[,] fields)
+        public void Game_CreatesNewGuid()
         {
-            game = new Game(fields, mockBoardFactory.Object, new DifficultyLevelEasy());
+            game = new Game(new IShip[] { mockShip.Object }, mockBoardFactory.Object, new DifficultyLevelEasy());
 
             Assert.IsNotNull(game.Guid, "Game should create new not empty Guid");
             Assert.Greater(game.Guid, System.Guid.Empty, "Game should create new not empty Guid");
         }
 
         [Test]
-        [TestCaseSource(nameof(FieldCoordinates))]
-        public void Game_CreatesComputerAndPlayerBoards(bool[,] fields)
+        [TestCaseSource(nameof(ShipsCoordinates))]
+        public void Game_CreatesComputerAndPlayerBoards(IList<IField> fields)
         {
-            game = new Game(fields, mockBoardFactory.Object, new DifficultyLevelEasy());
+            mockShip.Setup(x => x.Coordinates).Returns(fields);
+            game = new Game(new IShip[] { mockShip.Object }, mockBoardFactory.Object, new DifficultyLevelEasy());
 
             Assert.AreSame(mockBoardComputer.Object, game.ComputerBoard);
             Assert.AreSame(mockBoardPlayer.Object, game.PlayerBoard);
         }
 
         [Test]
-        [TestCaseSource(nameof(FieldCoordinates))]
-        public void Game_IsWon_ComputerShipsAreSunk(bool[,] fields)
+        public void Game_IsWon_ComputerShipsAreSunk()
         {
             mockBoardComputer.Setup(x => x.AreAllShipsSunk).Returns(true);
-            game = new Game(fields, mockBoardFactory.Object, new DifficultyLevelEasy());
+            game = new Game(new IShip[] { mockShip.Object }, mockBoardFactory.Object, new DifficultyLevelEasy());
 
             Assert.IsTrue(game.IsWon);
         }
 
         [Test]
-        [TestCaseSource(nameof(FieldCoordinates))]
-        public void Game_IsLost_PlayerShipsAreSunk(bool[,] fields)
+        public void Game_IsLost_PlayerShipsAreSunk()
         {
             mockBoardPlayer.Setup(x => x.AreAllShipsSunk).Returns(true);
-            game = new Game(fields, mockBoardFactory.Object, new DifficultyLevelEasy());
+            game = new Game(new IShip[] { mockShip.Object }, mockBoardFactory.Object, new DifficultyLevelEasy());
 
             Assert.IsTrue(game.IsLost);
         }
@@ -91,7 +92,7 @@ namespace BattleShips.Core.Tests.GameEntities
         [Test]
         public void MakeComputerMovement_UsesDifficultyLevelToChooseShotCoordinates()
         {
-            game = new Game(new bool[1, 1], mockBoardFactory.Object, mockDifficultyLevel.Object);
+            game = new Game(new IShip[] { mockShip.Object }, mockBoardFactory.Object, mockDifficultyLevel.Object);
 
             game.MakeComputerMovement();
 
@@ -104,7 +105,7 @@ namespace BattleShips.Core.Tests.GameEntities
         {
             var expectedResult = new ShootResultDTO() {IsShipHit = isHit, IsShipSunk = isSunk };
             mockBoardPlayer.Setup(x => x.Shoot(It.IsAny<int>(), It.IsAny<int>())).Returns(expectedResult);
-            game = new Game(new bool[1,1], mockBoardFactory.Object, mockDifficultyLevel.Object);
+            game = new Game(new IShip[] { mockShip.Object }, mockBoardFactory.Object, mockDifficultyLevel.Object);
 
             var result = game.MakeComputerMovement();
 
@@ -116,7 +117,7 @@ namespace BattleShips.Core.Tests.GameEntities
         {
             var expectedResult = new ShootResultDTO() { IsShipHit = isHit, IsShipSunk = isSunk };
             mockBoardComputer.Setup(x => x.Shoot(It.IsAny<int>(), It.IsAny<int>())).Returns(expectedResult);
-            game = new Game(new bool[1, 1], mockBoardFactory.Object, mockDifficultyLevel.Object);
+            game = new Game(new IShip[] { mockShip.Object }, mockBoardFactory.Object, mockDifficultyLevel.Object);
 
             var result = game.MakePlayerMovement(0, 0);
 
@@ -127,7 +128,7 @@ namespace BattleShips.Core.Tests.GameEntities
         public void MakePlayerMovement_AfterGameIsLost_ThrowsException()
         {
             mockBoardPlayer.Setup(x => x.AreAllShipsSunk).Returns(true);
-            game = new Game(new bool[1, 1], mockBoardFactory.Object, mockDifficultyLevel.Object);
+            game = new Game(new IShip[] { mockShip.Object }, mockBoardFactory.Object, mockDifficultyLevel.Object);
 
             Assert.Throws<GameLogicalException>(() => game.MakePlayerMovement(0, 0));
         }
@@ -136,7 +137,7 @@ namespace BattleShips.Core.Tests.GameEntities
         public void MakePlayerMovement_AfterGameIsWon_ThrowsException()
         {
             mockBoardComputer.Setup(x => x.AreAllShipsSunk).Returns(true);
-            game = new Game(new bool[1, 1], mockBoardFactory.Object, mockDifficultyLevel.Object);
+            game = new Game(new IShip[] { mockShip.Object }, mockBoardFactory.Object, mockDifficultyLevel.Object);
 
             Assert.Throws<GameLogicalException>(() => game.MakePlayerMovement(0, 0));
         }
@@ -145,7 +146,7 @@ namespace BattleShips.Core.Tests.GameEntities
         public void MakeComputerMovement_AfterGameIsLost_ThrowsException()
         {
             mockBoardPlayer.Setup(x => x.AreAllShipsSunk).Returns(true);
-            game = new Game(new bool[1, 1], mockBoardFactory.Object, mockDifficultyLevel.Object);
+            game = new Game(new IShip[] { mockShip.Object }, mockBoardFactory.Object, mockDifficultyLevel.Object);
 
             Assert.Throws<GameLogicalException>(() => game.MakeComputerMovement());
         }
@@ -154,7 +155,7 @@ namespace BattleShips.Core.Tests.GameEntities
         public void MakeComputerMovement_AfterGameIsWon_ThrowsException()
         {
             mockBoardComputer.Setup(x => x.AreAllShipsSunk).Returns(true);
-            game = new Game(new bool[1, 1], mockBoardFactory.Object, mockDifficultyLevel.Object);
+            game = new Game(new IShip[] { mockShip.Object }, mockBoardFactory.Object, mockDifficultyLevel.Object);
 
             Assert.Throws<GameLogicalException>(() => game.MakeComputerMovement());
         }

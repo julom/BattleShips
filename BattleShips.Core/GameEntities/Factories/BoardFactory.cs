@@ -1,6 +1,7 @@
 ﻿using BattleShips.Core.GameEntities.Abstract;
 using BattleShips.Core.GameEntities.Factories.Abstract;
 using BattleShips.Core.GameEntities.Utils.Abstract;
+using System;
 
 namespace BattleShips.Core.GameEntities.Factories
 {
@@ -17,15 +18,16 @@ namespace BattleShips.Core.GameEntities.Factories
             _shipPositionsRandomizer = shipPositionsRandomizer;
         }
 
-        public IBoard CreateBoard(bool[,] fields = null)
+        public IBoard CreateBoard(IShip[] ships = null)
         {
-            if (fields == null)
+            if (ships == null)
             {
                 return new Board(_gameSettings, _shipFactory, _shipPositionsRandomizer);
             }
             else
             {
-                return new Board(fields, _gameSettings, _shipFactory);
+                return new Board(ships, _gameSettings, _shipFactory);
+                throw new NotImplementedException();
             }
         }
     }

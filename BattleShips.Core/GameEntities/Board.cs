@@ -24,11 +24,11 @@ namespace BattleShips.Core.GameEntities
             }
         }
 
-        public Board(bool[,] fields, IGameSettings gameSettings, IShipFactory shipFactory)
+        public Board(IShip[] ships, IGameSettings gameSettings, IShipFactory shipFactory)
         {
             _gameSettings = gameSettings;
             _shipFactory = shipFactory;
-            Ships = DefineShipsPositions(fields);
+            Ships = ships;
             Fields = FillTheFields(Ships);
         }
 
