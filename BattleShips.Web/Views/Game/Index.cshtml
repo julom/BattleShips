@@ -12,7 +12,7 @@
 </div>
 
 
-<form asp-controller="Game" asp-action="Index" method="post">
+<form asp-controller="Game" asp-action="CheckShips" method="post">
     <div class="well well-lg col-md-12">
         <div class="col-md-6">
             <table id="table-user-input">
@@ -33,7 +33,8 @@
                                 <div class="board-cell">
                                     <label class="lbl-check">
                                         <button type="button" class="btn btn-check" />
-                                        <input type="checkbox" class="cbx-check hidden" autocomplete="off" asp-for="@Model.PlayerShipsPositions[row * GameSettings.BoardSizeY + col]" />
+                                        <input type="checkbox" class="cbx-check hidden" autocomplete="off" 
+                                               asp-for="@Model.PlayerShipsPositions.ShipsFields[row * GameSettings.BoardSizeY + col]" />
                                     </label>
                                 </div>
                             </td>
@@ -48,10 +49,11 @@
                 <li>1x Battleship (5 squares)</li>
                 <li>2x Destroyers (4 squares)</li>
             </ul>
+            @{await Html.RenderPartialAsync("_ShipPositionInputPartial", Model.PlayerShipsPositions);}
         </div>
     </div>
 
-    <button type="submit" class="btn btn-primary" name="startGame" asp-controller="Game" asp-action="Index" method="post">Start</button>
+    <button type="submit" class="btn btn-primary" name="startGame" asp-controller="Game" asp-action="Start" method="post">Start</button>
     <button type="reset" class="btn btn-primary" id="btn-reset" value="Reset">Clear</button>
 </form>
 

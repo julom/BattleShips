@@ -13,9 +13,18 @@ table tr th {
     text-align: center;
 }
 
+/* Ships input table
+ ------------------------------------------------- */
+.ships-input tr td {
+    padding: 5px;
+}
+
+.ship-coordinate-input {
+    width: 100%;
+}
+
 /* Board checkers
 -------------------------------------------------- */
-
 :root {
     --empty-cell-bg-color: lightblue;
     --ship-cell-bg-color: black;

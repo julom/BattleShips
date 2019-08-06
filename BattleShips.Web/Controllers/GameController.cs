@@ -17,10 +17,8 @@ namespace BattleShips.Web.Controllers
         }
 
         [HttpGet]
-        public IActionResult Index()
+        public IActionResult Index(GameModel gameModel)
         {
-            var gameModel = new GameModel();
-
             var message = TempData["messageToUser"] as string;
             if (!string.IsNullOrEmpty(message))
             {
@@ -30,13 +28,33 @@ namespace BattleShips.Web.Controllers
             return View(gameModel);
         }
 
+        public IActionResult CheckShips(UserShipsLocationViewModel userShipsLocationVM)
+        {
+            var gameModel = new GameModel();
+
+            try
+            {
+                var shipVectors = userShipsLocationVM.GetShipVectors();
+                var gameService = _serviceProvider.GetService<IGameService>();
+                var fields = gameService.TryShipPositioning(shipVectors);
+                userShipsLocationVM.ShipsFields = fields;
+                gameModel.PlayerShipsPositions = userShipsLocationVM;
+            }
+            catch(Exception e)
+            {
+                gameModel.UserCommunicationVM.MessageToUser.Add("Error: " + e.Message);
+            }
+            return View("Index", gameModel);
+            return RedirectToAction(nameof(Index), gameModel);
+        }
+
         [HttpPost]
-        public IActionResult Index(GameModel gameModel)
+        public IActionResult Start(GameModel gameModel)
         {
             try
             {
                 var gameService = _serviceProvider.GetService<IGameService>();
-                gameModel.Game = gameService.InitializeGame(gameModel.PlayerShipsPositions, new DifficultyLevelEasy());
+                //gameModel.Game = gameService.InitializeGame(gameModel.PlayerShipsPositions, new DifficultyLevelEasy());
                 gameModel.GameGuid = gameService.CurrentGameGuid;
             }
             catch(Exception e)

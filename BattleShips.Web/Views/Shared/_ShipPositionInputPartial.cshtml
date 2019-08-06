@@ -1,0 +1,30 @@
+﻿@model BattleShips.Web.Models.UserShipsLocationViewModel
+@inject IGameSettings gameSettings
+
+
+<form asp-controller="GameController" asp-action="CheckShips" method="post">
+    <table class="ships-input">
+        <thead>
+            <tr>
+                <th class="col-xs-2">From</th>
+                <th class="col-xs-2">To</th>
+                <th class="col-xs-8" />
+            </tr>
+        </thead>
+        <tbody>
+            @for (int i = 0; i < gameSettings.ShipSizes.Count; i++)
+            {
+                <tr>
+                    <td>
+                        <input asp-for="ShipsUserCoordinates[i].Key.UserCoordinate" class="ship-coordinate-input">
+                    </td>
+                    <td>
+                        <input asp-for="ShipsUserCoordinates[i].Value.UserCoordinate" class="ship-coordinate-input">
+                    </td>
+                    <td />
+                </tr>
+            }
+        </tbody>
+    </table>
+    <button type="submit" asp-action="CheckShips">Save</button>
+</form>
