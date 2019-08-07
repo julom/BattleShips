@@ -1,8 +1,5 @@
-﻿using BattleShips.Core.GameEntities;
-using BattleShips.Core.GameEntities.Abstract;
-using BattleShips.Core.GameEntities.Structs;
+﻿using BattleShips.Core.GameEntities.Abstract;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace BattleShips.Web.Models
@@ -14,7 +11,7 @@ namespace BattleShips.Web.Models
         
         public IGame Game { get; set; }
 
-        public UserShipsLocationViewModel PlayerShipsPositions { get; set; }
+        public bool[] ShipsFields { get; set; }
 
         public UserCommunicationViewModel UserCommunicationVM { get; } = new UserCommunicationViewModel();
         

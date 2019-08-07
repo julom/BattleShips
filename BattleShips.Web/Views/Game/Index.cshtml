@@ -3,6 +3,12 @@
 
 @{
     ViewData["Title"] = "Welcome";
+
+    UserShipsLocationViewModel userShipsLocationVM = new UserShipsLocationViewModel();
+    if (TempData[nameof(UserShipsLocationViewModel)] is string serializedVm)
+    {
+        userShipsLocationVM = Newtonsoft.Json.JsonConvert.DeserializeObject<UserShipsLocationViewModel>(serializedVm);
+    }
 }
 
 
@@ -12,7 +18,7 @@
 </div>
 
 
-<form asp-controller="Game" asp-action="CheckShips" method="post">
+<form method="post">
     <div class="well well-lg col-md-12">
         <div class="col-md-6">
             <table id="table-user-input">
@@ -32,9 +38,9 @@
                             <td>
                                 <div class="board-cell">
                                     <label class="lbl-check">
-                                        <button type="button" class="btn btn-check" />
-                                        <input type="checkbox" class="cbx-check hidden" autocomplete="off" 
-                                               asp-for="@Model.PlayerShipsPositions.ShipsFields[row * GameSettings.BoardSizeY + col]" />
+                                        <button type="button" class="btn btn-check" disabled />
+                                        <input type="checkbox" class="cbx-check hidden" autocomplete="off"
+                                               asp-for="@Model.ShipsFields[row * GameSettings.BoardSizeY + col]" />
                                     </label>
                                 </div>
                             </td>
@@ -49,13 +55,16 @@
                 <li>1x Battleship (5 squares)</li>
                 <li>2x Destroyers (4 squares)</li>
             </ul>
-            @{await Html.RenderPartialAsync("_ShipPositionInputPartial", Model.PlayerShipsPositions);}
+            @{await Html.RenderPartialAsync("_ShipPositionInputPartial", userShipsLocationVM);}
         </div>
     </div>
 
-    <button type="submit" class="btn btn-primary" name="startGame" asp-controller="Game" asp-action="Start" method="post">Start</button>
+    <button type="submit" class="btn btn-primary" name="startGame" asp-action="Create" method="post">Start</button>
     <button type="reset" class="btn btn-primary" id="btn-reset" value="Reset">Clear</button>
+
 </form>
+
+
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}

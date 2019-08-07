@@ -29,9 +29,9 @@
                                 <label class="lbl-check">
                                     <button type="button" class="btn btn-check" disabled>
                                         <div class="cell" />
-                                        <param name="cell-param-is-hit" class="cell-param-is-hit" valuetype="bool" value="@Model.Game.PlayerBoard.Fields[row,col].IsFieldShot" />
+                                        <param name="cell-param-is-hit" class="cell-param-is-hit" valuetype="bool" value="@Model.Game.PlayerBoard.Fields[col, row].IsFieldShot" />
                                     </button>
-                                    <input type="checkbox" class="cbx-check hidden" autocomplete="off" value="@Model.Game.PlayerBoard.Fields[row,col].IsShipField" />
+                                    <input type="checkbox" class="cbx-check hidden" autocomplete="off" value="@Model.Game.PlayerBoard.Fields[col, row].IsShipField" />
                                 </label>
                             </div>
                         </td>
@@ -61,11 +61,11 @@
                             <td>
                                 <div class="board-cell">
                                     <label class="lbl-check">
-                                        <button type="submit" class="btn btn-check" asp-controller="Game" asp-action="NextTurn" asp-route-shootPositionX="@row" asp-route-shootPositionY="@col" method="post">
+                                        <button type="submit" class="btn btn-check" asp-controller="Game" asp-action="NextTurn" asp-route-shootPositionX="@col" asp-route-shootPositionY="@row" method="post">
                                             <div class="cell" />
-                                            <param name="cell-param-is-hit" class="cell-param-is-hit" valuetype="bool" value="@Model.Game.ComputerBoard.Fields[row,col].IsFieldShot" />
+                                            <param name="cell-param-is-hit" class="cell-param-is-hit" valuetype="bool" value="@Model.Game.ComputerBoard.Fields[col, row].IsFieldShot" />
                                         </button>
-                                        <input type="checkbox" class="cbx-check hidden" autocomplete="off" value="@Model.Game.ComputerBoard.Fields[row,col].IsShipField" />
+                                        <input type="checkbox" class="cbx-check hidden" autocomplete="off" value="@Model.Game.ComputerBoard.Fields[col, row].IsShipField" />
                                     </label>
                                 </div>
                             </td>
