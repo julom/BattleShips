@@ -7,6 +7,7 @@ using BattleShips.Core.GameEntities.Abstract;
 using BattleShips.Core.GameEntities.DifficultyLevels.Abstract;
 using BattleShips.Core.GameEntities.Factories;
 using BattleShips.Core.GameEntities.Structs;
+using BattleShips.Core.GameEntities.Utils.Abstract;
 using BattleShips.GameRepository;
 using BattleShips.Web.Services.Abstract;
 
@@ -17,18 +18,20 @@ namespace BattleShips.Web.Services
         private readonly IGameSettings _gameSettings;
         private readonly IGameRepository _gameRepository;
         private readonly IShipFactory _shipFactory;
+        private readonly IGameStatusUpdater _gameStatusUpdater;
 
         public IGame CurrentGame { get; private set; }
         public Guid? CurrentGameGuid { get => CurrentGame?.Guid; }
 
-        public GameService(IGameSettings gameSettings, IGameRepository gameRepository, IShipFactory shipFactory)
+        public GameService(IGameSettings gameSettings, IGameRepository gameRepository, IShipFactory shipFactory, IGameStatusUpdater gameStatusUpdater)
         {
             _gameSettings = gameSettings;
             _gameRepository = gameRepository;
             _shipFactory = shipFactory;
+            _gameStatusUpdater = gameStatusUpdater;
         }
 
-        public bool[] TryShipPositioning(IList<ShipLayout> shipsLayouts)
+        public bool[] GetShipsPositions(IList<ShipLayout> shipsLayouts)
         {
             var allShipsFields = new List<IField>();
             foreach (var layout in shipsLayouts)
@@ -42,7 +45,7 @@ namespace BattleShips.Web.Services
             {
                 for (int col = 0; col < _gameSettings.BoardSizeX; col++)
                 {
-                    shipPositions[row * _gameSettings.BoardSizeX + col] = allShipsFields.Any(x => x.PositionX == col && x.PositionY == row);
+                    shipPositions[row * _gameSettings.BoardSizeY + col] = allShipsFields.Any(x => x.PositionX == col && x.PositionY == row);
                 }
             }
 
@@ -62,11 +65,11 @@ namespace BattleShips.Web.Services
             return CurrentGame;
         }
 
-        public bool RemoveGame()
+        public bool RemoveGame(Guid? gameGuid)
         {
-            if (CurrentGameGuid.HasValue)
+            if (gameGuid.HasValue)
             {
-                return _gameRepository.DeleteGame(CurrentGameGuid.Value);
+                return _gameRepository.DeleteGame(gameGuid.Value);
             }
             return false;
         }
@@ -80,41 +83,17 @@ namespace BattleShips.Web.Services
                 throw new GameException("Game not available. Please start a new game");
 
             var playerResult = CurrentGame.MakePlayerMovement(shootPositionX, shootPositionY);
-            UpdateGameStatus(currentGameStatus, "You", playerResult, CurrentGame);
+            _gameStatusUpdater.UpdateGameStatus(currentGameStatus, "You", playerResult, CurrentGame);
 
             if (!CurrentGame.IsWon)
             {
                 var computerResult = CurrentGame.MakeComputerMovement();
-                UpdateGameStatus(currentGameStatus, "Opponent", computerResult, CurrentGame);
+                _gameStatusUpdater.UpdateGameStatus(currentGameStatus, "Opponent", computerResult, CurrentGame);
             }
 
             _gameRepository.UpdateGame(gameGuid, CurrentGame);
 
             return currentGameStatus;
-        }
-
-        private static void UpdateGameStatus(IList<string> gameStatusList, string person, ShootResultDTO shootResult, IGame game)
-        {
-            if (gameStatusList == null) gameStatusList = new List<string>();
-
-            var shotCoordinate = new Coordinate(shootResult.PositionX, shootResult.PositionY);
-            var boardShotPosition = Coordinate.GetBoardPosition(shotCoordinate);
-
-            gameStatusList.Add($"{person} shot position ({boardShotPosition})");
-            gameStatusList.Add(shootResult.IsShipHit ? "Hit!" : "Missed");
-
-            if (shootResult.IsShipSunk)
-            {
-                gameStatusList.Add("Ship is sunk!");
-                if (game.IsWon)
-                {
-                    gameStatusList.Add("You sunk all opponents ships, you won!");
-                }
-                else if (game.IsLost)
-                {
-                    gameStatusList.Add("Opponent sunk all your ships, you lost");
-                }
-            }
         }
     }
 }

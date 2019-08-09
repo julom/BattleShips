@@ -15,11 +15,14 @@ namespace BattleShips.Tests
         {
             var services = new ServiceCollection();
             services.AddScoped<IGameSettings, TestGameSettings>();
+
             services.AddTransient<IShipFactory, ShipFactory>();
             services.AddTransient<IShipCoordinatesValidator, ShipCoordinatesValidator>();
             services.AddTransient<IShipVectorsValidator, ShipVectorsValidator>();
             services.AddTransient<IShipPositionsRandomizer, ShipPositionsRandomizer>();
             services.AddTransient<IShipsGroupValidator, ShipsGroupValidator>();
+            services.AddTransient<IGameStatusUpdater, GameStatusUpdater>();
+
             var serviceProvider = services.BuildServiceProvider();
             return serviceProvider;
         }

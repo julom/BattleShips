@@ -11,7 +11,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{A784F4CD
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BattleShips.Core.Tests", "BattleShips.Core.Tests\BattleShips.Core.Tests.csproj", "{DE21DBF5-D030-4046-8533-60B467D6A07E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BattleShips.GameRepository", "BattleShips.GameRepository\BattleShips.GameRepository.csproj", "{783E95C8-3322-4BAF-8C8E-EB26437C3DE4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BattleShips.GameRepository", "BattleShips.GameRepository\BattleShips.GameRepository.csproj", "{783E95C8-3322-4BAF-8C8E-EB26437C3DE4}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BattleShips.GameRepository.Tests", "BattleShips.GameRepository.Tests\BattleShips.GameRepository.Tests.csproj", "{800C812C-A013-44B1-800E-3423AB190AB0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BattleShips.Web.Tests", "BattleShips.Web.Tests\BattleShips.Web.Tests.csproj", "{532ADBBE-5C61-45E1-AF5B-AE2D6FB0A1DC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -35,12 +39,22 @@ Global
 		{783E95C8-3322-4BAF-8C8E-EB26437C3DE4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{783E95C8-3322-4BAF-8C8E-EB26437C3DE4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{783E95C8-3322-4BAF-8C8E-EB26437C3DE4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{800C812C-A013-44B1-800E-3423AB190AB0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{800C812C-A013-44B1-800E-3423AB190AB0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{800C812C-A013-44B1-800E-3423AB190AB0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{800C812C-A013-44B1-800E-3423AB190AB0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{532ADBBE-5C61-45E1-AF5B-AE2D6FB0A1DC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{532ADBBE-5C61-45E1-AF5B-AE2D6FB0A1DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{532ADBBE-5C61-45E1-AF5B-AE2D6FB0A1DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{532ADBBE-5C61-45E1-AF5B-AE2D6FB0A1DC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{DE21DBF5-D030-4046-8533-60B467D6A07E} = {A784F4CD-5C68-45CB-BB27-E3F70970D3B6}
+		{800C812C-A013-44B1-800E-3423AB190AB0} = {A784F4CD-5C68-45CB-BB27-E3F70970D3B6}
+		{532ADBBE-5C61-45E1-AF5B-AE2D6FB0A1DC} = {A784F4CD-5C68-45CB-BB27-E3F70970D3B6}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4FBCBC60-8282-4625-B700-52F035588274}

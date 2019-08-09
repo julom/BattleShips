@@ -11,9 +11,9 @@ namespace BattleShips.Web.Services.Abstract
         IGame CurrentGame { get; }
         Guid? CurrentGameGuid { get; }
 
-        bool[] TryShipPositioning(IList<ShipLayout> shipsLayouts);
+        bool[] GetShipsPositions(IList<ShipLayout> shipsLayouts);
         IGame InitializeGame(IList<ShipLayout> shipsLayouts, IDifficultyLevel difficultyLevel);
-        bool RemoveGame();
+        bool RemoveGame(Guid? gameGuid);
         IList<string> TakeNextRound(int shootPositionX, int shootPositionY, Guid gameGuid);
     }
 }

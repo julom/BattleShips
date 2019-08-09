@@ -42,7 +42,7 @@ namespace BattleShips.Web.Controllers
             {
                 var shipLayouts = userShipsLocationVM.ShipsLayouts;
                 var gameService = _serviceProvider.GetService<IGameService>();
-                var fields = gameService.TryShipPositioning(shipLayouts);
+                var fields = gameService.GetShipsPositions(shipLayouts);
                 userShipsLocationVM.ShipsFields = fields;
             }
             catch(Exception e)
@@ -80,7 +80,7 @@ namespace BattleShips.Web.Controllers
             catch (Exception e)
             {
                 if (gameService != null)
-                    gameService.RemoveGame();
+                    gameService.RemoveGame(gameModel.GameGuid);
 
                 TempData[nameof(UserCommunicationViewModel.MessageToUser)] = "Error: " + e.Message;
 
