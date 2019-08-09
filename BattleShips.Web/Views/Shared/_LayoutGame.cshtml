@@ -1,0 +1,16 @@
+﻿@model GameModel
+
+@{
+    Layout = "_Layout";
+}
+
+
+@RenderBody()
+
+@{await Html.RenderPartialAsync("_UserCommunicationPartial", Model.UserCommunicationVM);}
+
+
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

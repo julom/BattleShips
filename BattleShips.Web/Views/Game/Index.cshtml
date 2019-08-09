@@ -3,6 +3,7 @@
 
 @{
     ViewData["Title"] = "Welcome";
+    Layout = "_LayoutGame";
 
     UserShipsLocationViewModel userShipsLocationVM = new UserShipsLocationViewModel();
     if (TempData[nameof(UserShipsLocationViewModel)] is string serializedVm)
@@ -63,9 +64,3 @@
     <button type="reset" class="btn btn-primary" id="btn-reset" value="Reset">Clear</button>
 
 </form>
-
-
-
-@section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-}

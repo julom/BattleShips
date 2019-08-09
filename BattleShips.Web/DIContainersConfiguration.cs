@@ -26,6 +26,7 @@ namespace BattleShips.Web
             services.AddTransient<IShipPositionsRandomizer, ShipPositionsRandomizer>();
             services.AddTransient<IShipCoordinatesValidator, ShipCoordinatesValidator>();
             services.AddTransient<IShipVectorsValidator, ShipVectorsValidator>();
+            services.AddTransient<IShipsGroupValidator, ShipsGroupValidator>();
         }
     }
 }

@@ -2,7 +2,8 @@
 @inject IGameSettings GameSettings
 
 @{
-    ViewData["Title"] = "GameProgress";
+    ViewData["Title"] = "Game in progress";
+    Layout = "_LayoutGame";
 }
 
 <h2>Game in progress</h2>
@@ -76,7 +77,3 @@
         </form>
     </div>
 </div>
-
-@section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-}

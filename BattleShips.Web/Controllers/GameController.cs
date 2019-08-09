@@ -22,7 +22,7 @@ namespace BattleShips.Web.Controllers
         {
             var gameModel = new GameModel();
 
-            if (TempData["messageToUser"] is string message)
+            if (TempData[nameof(UserCommunicationViewModel.MessageToUser)] is string message)
             {
                 gameModel.UserCommunicationVM.MessageToUser.Add(message);
             }
@@ -38,23 +38,20 @@ namespace BattleShips.Web.Controllers
 
         public IActionResult CheckShips(UserShipsLocationViewModel userShipsLocationVM)
         {
-            var gameModel = new GameModel();
-
             try
             {
-                var shipVectors = userShipsLocationVM.ShipVectors;
+                var shipLayouts = userShipsLocationVM.ShipsLayouts;
                 var gameService = _serviceProvider.GetService<IGameService>();
-                var fields = gameService.TryShipPositioning(shipVectors);
+                var fields = gameService.TryShipPositioning(shipLayouts);
                 userShipsLocationVM.ShipsFields = fields;
-
-                var serializedVm = JsonConvert.SerializeObject(userShipsLocationVM);
-                TempData[nameof(UserShipsLocationViewModel)] = serializedVm;
             }
             catch(Exception e)
             {
-                gameModel.UserCommunicationVM.MessageToUser.Add("Error: " + e.Message);
-                TempData["messageToUser"] = gameModel.UserCommunicationVM.MessageToUser;
+                TempData[nameof(UserCommunicationViewModel.MessageToUser)] = "Error: " + e.Message;
             }
+
+            var serializedVm = JsonConvert.SerializeObject(userShipsLocationVM);
+            TempData[nameof(UserShipsLocationViewModel)] = serializedVm;
 
             return RedirectToAction(nameof(Index));
         }
@@ -62,25 +59,33 @@ namespace BattleShips.Web.Controllers
         [HttpPost]
         public IActionResult Create(GameModel gameModel, UserShipsLocationViewModel userShipsLocationVM)
         {
+            // Guid has not been created yet
             ModelState.ClearValidationState(nameof(GameModel.GameGuid));
             ModelState.MarkFieldSkipped(nameof(GameModel.GameGuid));
             if (!ModelState.IsValid)
             {
-                TempData["messageToUser"] = ModelState.ValidationState;
+                TempData[nameof(UserCommunicationViewModel.MessageToUser)] = "Game needed to be restarted. Please start again";
                 return View(nameof(Index), gameModel);
             }
 
+            IGameService gameService = null;
             try
             {
-                var gameService = _serviceProvider.GetService<IGameService>();
-                gameModel.Game = gameService.InitializeGame(userShipsLocationVM.ShipVectors, new DifficultyLevelEasy());
+                gameService = _serviceProvider.GetService<IGameService>();
+                gameModel.Game = gameService.InitializeGame(userShipsLocationVM.ShipsLayouts, new DifficultyLevelEasy());
                 gameModel.GameGuid = gameService.CurrentGameGuid;
+
                 return View("GameProgress", gameModel);
             }
             catch (Exception e)
             {
-                gameModel.UserCommunicationVM.MessageToUser.Add(e.Message);
-                TempData["messageToUser"] = gameModel.UserCommunicationVM.MessageToUser;
+                if (gameService != null)
+                    gameService.RemoveGame();
+
+                TempData[nameof(UserCommunicationViewModel.MessageToUser)] = "Error: " + e.Message;
+
+                var serializedVm = JsonConvert.SerializeObject(userShipsLocationVM);
+                TempData[nameof(UserShipsLocationViewModel)] = serializedVm;
             }
 
             return RedirectToAction(nameof(Index));
@@ -95,20 +100,22 @@ namespace BattleShips.Web.Controllers
                 {
                     var gameService = _serviceProvider.GetService<IGameService>();
                     var result = gameService.TakeNextRound(shootPositionX.Value, shootPositionY.Value, gameModel.GameGuid.Value);
+
                     var userCommunicationVM = gameModel.UserCommunicationVM;
                     userCommunicationVM.CurrentGameStatus = result;
+
                     gameModel.Game = gameService.CurrentGame;
+
                     return View("GameProgress", gameModel);
                 }
                 catch (Exception e)
                 {
-                    gameModel.UserCommunicationVM.MessageToUser.Add(e.Message);
-                    TempData["messageToUser"] = gameModel.UserCommunicationVM.MessageToUser;
+                    TempData[nameof(UserCommunicationViewModel.MessageToUser)] = "Error: " + e.Message;
                 }
             }
             else
             {
-                TempData["messageToUser"] = "Game needed to be restarted. Please start again";
+                TempData[nameof(UserCommunicationViewModel.MessageToUser)] = "Game needed to be restarted. Please start again";
             }
 
             return RedirectToAction(nameof(Index));
