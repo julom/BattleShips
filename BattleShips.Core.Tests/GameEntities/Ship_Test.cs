@@ -8,6 +8,7 @@ using Moq;
 using BattleShips.Core.Utils;
 using BattleShips.Core.GameEntities.Enums;
 using BattleShips.Core.GameEntities.Validators.Abstract;
+using BattleShips.Core.GameEntities.Structs;
 
 namespace BattleShips.Core.Tests.GameEntities
 {
@@ -20,33 +21,51 @@ namespace BattleShips.Core.Tests.GameEntities
             yield return new TestCaseData(CoordinatesUtils.CreateCoordinates((10, 10), (11, 10), (12, 10), (13, 10)));
         }
 
+        public static IEnumerable<TestCaseData> ProperVectors()
+        {
+            yield return new TestCaseData(new ShipVector(10, 10), new ShipVector(10, 13));
+            yield return new TestCaseData(new ShipVector(10, 10), new ShipVector(13, 10));
+        }
+
 
         Ship _ship;
-        Mock<IShipCoordinatesValidator> mockShipValidator;
+        Mock<IShipCoordinatesValidator> mockShipCoordinatesValidator;
+        Mock<IShipVectorsValidator> mockShipVectorsValidator;
 
         [SetUp]
         public void Initialize()
         {
-            mockShipValidator = new Mock<IShipCoordinatesValidator>();
-            mockShipValidator.Setup(x => x.Validate(It.IsAny<IList<KeyValuePair<int, int>>>())).Returns(true);
+            mockShipCoordinatesValidator = new Mock<IShipCoordinatesValidator>();
+            mockShipCoordinatesValidator.Setup(x => x.Validate(It.IsAny<IList<KeyValuePair<int, int>>>())).Returns(true);
+            mockShipVectorsValidator = new Mock<IShipVectorsValidator>();
+            mockShipVectorsValidator.Setup(x => x.Validate(It.IsAny<ShipVector>(), It.IsAny<ShipVector>())).Returns(true);
         }
 
         [Test]
         [TestCaseSource(nameof(ProperCoordinates))]
         public void Ship_HasEqualCoordinatesCount(IList<KeyValuePair<int, int>> shipFields)
         {
-            _ship = new Ship(shipFields, mockShipValidator.Object);
+            _ship = new Ship(shipFields, mockShipCoordinatesValidator.Object);
 
-            Assert.AreEqual(shipFields.Count,_ship.Coordinates.Count);
+            Assert.AreEqual(shipFields.Count, _ship.Coordinates.Count);
+        }
+
+        [Test]
+        [TestCaseSource(nameof(ProperVectors))]
+        public void Ship_HasEqualCoordinatesCount(ShipVector vectorX, ShipVector vectorY)
+        {
+            _ship = new Ship(vectorX, vectorY, mockShipVectorsValidator.Object);
+
+            Assert.AreEqual(vectorX.Size * vectorY.Size, _ship.Coordinates.Count);
         }
 
         [Test]
         [TestCaseSource(nameof(ProperCoordinates))]
         public void Ship_NotPassedCoordinatesValidation(IList<KeyValuePair<int, int>> shipFields)
         {
-            mockShipValidator.Setup(x => x.Validate(It.IsAny<IList<KeyValuePair<int, int>>>())).Returns(false);
+            mockShipCoordinatesValidator.Setup(x => x.Validate(It.IsAny<IList<KeyValuePair<int, int>>>())).Returns(false);
 
-            Assert.Throws<GameArgumentException>(() => new Ship(shipFields, mockShipValidator.Object), 
+            Assert.Throws<GameArgumentException>(() => new Ship(shipFields, mockShipCoordinatesValidator.Object), 
                 "Validator should not allow to create Ship if coordinates are wrong");
         }
 
@@ -54,16 +73,16 @@ namespace BattleShips.Core.Tests.GameEntities
         [TestCaseSource(nameof(ProperCoordinates))]
         public void Ship_CalculatesSize(IList<KeyValuePair<int, int>> shipFields)
         {
-            _ship = new Ship(shipFields, mockShipValidator.Object);
+            _ship = new Ship(shipFields, mockShipCoordinatesValidator.Object);
 
-            Assert.AreEqual(shipFields.Count, _ship.Size);
+            Assert.AreEqual(shipFields.Count, _ship.Size, "Ship size should count all ship segments");
         }
 
         [Test]
         [TestCaseSource(nameof(ProperCoordinates))]
         public void IsSunk_HasAllSegmentsHit_ReturnsTrue(IList<KeyValuePair<int, int>> shipFields)
         {
-            _ship = new Ship(shipFields, mockShipValidator.Object);
+            _ship = new Ship(shipFields, mockShipCoordinatesValidator.Object);
 
             foreach (var field in shipFields)
             {
@@ -77,7 +96,7 @@ namespace BattleShips.Core.Tests.GameEntities
         [TestCaseSource(nameof(ProperCoordinates))]
         public void IsSunk_HasAtLeastOneSegmentSaved_ReturnsFalse(IList<KeyValuePair<int, int>> shipFields)
         {
-            _ship = new Ship(shipFields, mockShipValidator.Object);
+            _ship = new Ship(shipFields, mockShipCoordinatesValidator.Object);
 
             foreach (var field in shipFields.Skip(1))
             {
@@ -92,7 +111,7 @@ namespace BattleShips.Core.Tests.GameEntities
         {
             var shipCoordinates = new List<KeyValuePair<int, int>>() { new KeyValuePair<int, int>(0, 0) };
             var shootCoordinates = shipCoordinates;
-            _ship = new Ship(shipCoordinates, mockShipValidator.Object);
+            _ship = new Ship(shipCoordinates, mockShipCoordinatesValidator.Object);
 
             _ship.TryToShoot(shootCoordinates.First().Key, shootCoordinates.First().Value);
 
@@ -105,7 +124,7 @@ namespace BattleShips.Core.Tests.GameEntities
         {
             var shipCoordinates = new List<KeyValuePair<int, int>>() {new KeyValuePair<int, int>(0, 0)};
             var shootCoordinates = shipCoordinates;
-            _ship = new Ship(shipCoordinates, mockShipValidator.Object);
+            _ship = new Ship(shipCoordinates, mockShipCoordinatesValidator.Object);
 
             var result = _ship.TryToShoot(shootCoordinates.First().Key, shootCoordinates.First().Value);
 
@@ -117,7 +136,7 @@ namespace BattleShips.Core.Tests.GameEntities
         {
             var shipCoordinates = new List<KeyValuePair<int, int>>() { new KeyValuePair<int, int>(0, 0) };
             var shootCoordinates = new List<KeyValuePair<int, int>>() { new KeyValuePair<int, int>(1, 1) };
-            _ship = new Ship(shipCoordinates, mockShipValidator.Object);
+            _ship = new Ship(shipCoordinates, mockShipCoordinatesValidator.Object);
 
             _ship.TryToShoot(shootCoordinates.First().Key, shootCoordinates.First().Value);
 
@@ -130,7 +149,7 @@ namespace BattleShips.Core.Tests.GameEntities
         {
             var shipCoordinates = new List<KeyValuePair<int, int>>() { new KeyValuePair<int, int>(0, 0) };
             var shootCoordinates = new List<KeyValuePair<int, int>>() { new KeyValuePair<int, int>(1, 1) };
-            _ship = new Ship(shipCoordinates, mockShipValidator.Object);
+            _ship = new Ship(shipCoordinates, mockShipCoordinatesValidator.Object);
 
             var result = _ship.TryToShoot(shootCoordinates.First().Key, shootCoordinates.First().Value);
 

@@ -11,8 +11,9 @@ namespace BattleShips.Web.Services.Abstract
         IGame CurrentGame { get; }
         Guid? CurrentGameGuid { get; }
 
-        bool[] TryShipPositioning(IList<KeyValuePair<ShipVector, ShipVector>> shipsVectors);
-        IGame InitializeGame(IList<KeyValuePair<ShipVector, ShipVector>> shipsVectors, IDifficultyLevel difficultyLevel);
+        bool[] TryShipPositioning(IList<ShipLayout> shipsLayouts);
+        IGame InitializeGame(IList<ShipLayout> shipsLayouts, IDifficultyLevel difficultyLevel);
+        bool RemoveGame();
         IList<string> TakeNextRound(int shootPositionX, int shootPositionY, Guid gameGuid);
     }
 }

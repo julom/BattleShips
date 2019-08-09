@@ -13,7 +13,7 @@ namespace BattleShips.Core.GameEntities
     {
         private readonly IShipCoordinatesValidator coordinatesValidator;
         private readonly IShipVectorsValidator vectorsValidator;
-        public int Size { get; private set; }
+        public int Size => Coordinates.Count;
         public IList<IField> Coordinates { get; private set; }
 
         public bool IsSunk
@@ -25,21 +25,19 @@ namespace BattleShips.Core.GameEntities
         {
             this.vectorsValidator = vectorsValidator;
             Coordinates = GetCoordinates(vectorX, vectorY);
-            Size = Coordinates.Count;
         }
 
         public Ship(IList<KeyValuePair<int, int>> coordinates, IShipCoordinatesValidator coordinatesValidator)
         {
             this.coordinatesValidator = coordinatesValidator;
             Coordinates = GetCoordinates(coordinates);
-            Size = Coordinates.Count;
         }
 
         private List<IField> GetCoordinates(ShipVector vectorX, ShipVector vectorY)
         {
             if (vectorsValidator.Validate(vectorX, vectorY))
             {
-                var fieldLayout = new VectorLayout(vectorX, vectorY);
+                var fieldLayout = new ShipLayout(vectorX, vectorY);
                 return fieldLayout.Values.Select(x =>
                         (IField)new Field(FieldTypes.Ship, x.PositionX, x.PositionY))
                     .ToList();

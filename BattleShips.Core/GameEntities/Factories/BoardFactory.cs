@@ -1,6 +1,7 @@
 ﻿using BattleShips.Core.GameEntities.Abstract;
 using BattleShips.Core.GameEntities.Factories.Abstract;
 using BattleShips.Core.GameEntities.Utils.Abstract;
+using BattleShips.Core.GameEntities.Validators.Abstract;
 using System;
 
 namespace BattleShips.Core.GameEntities.Factories
@@ -8,27 +9,26 @@ namespace BattleShips.Core.GameEntities.Factories
     public class BoardFactory : IBoardFactory
     {
         private readonly IGameSettings _gameSettings;
-        private readonly IShipFactory _shipFactory;
         private readonly IShipPositionsRandomizer _shipPositionsRandomizer;
+        private readonly IShipsGroupValidator _shipsGroupValidator;
 
-        public BoardFactory(IGameSettings gameSettings, IShipFactory shipFactory, IShipPositionsRandomizer shipPositionsRandomizer)
+        public BoardFactory(IGameSettings gameSettings, IShipPositionsRandomizer shipPositionsRandomizer, IShipsGroupValidator shipsGroupValidator)
         {
             _gameSettings = gameSettings;
-            _shipFactory = shipFactory;
             _shipPositionsRandomizer = shipPositionsRandomizer;
+            _shipsGroupValidator = shipsGroupValidator;
         }
 
-        public IBoard CreateBoard(IShip[] ships = null)
+        // Create board for player
+        public IBoard CreateBoard(IShip[] ships)
         {
-            if (ships == null)
-            {
-                return new Board(_gameSettings, _shipFactory, _shipPositionsRandomizer);
-            }
-            else
-            {
-                return new Board(ships, _gameSettings, _shipFactory);
-                throw new NotImplementedException();
-            }
+            return new Board(ships, _shipsGroupValidator, _gameSettings);
+        }
+
+        // Create board for computer opponent
+        public IBoard CreateBoard()
+        {
+            return new Board(_shipPositionsRandomizer, _gameSettings);
         }
     }
 }

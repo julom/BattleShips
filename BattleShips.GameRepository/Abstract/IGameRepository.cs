@@ -1,5 +1,4 @@
 ﻿using System;
-using BattleShips.Core;
 using BattleShips.Core.GameEntities.Abstract;
 using BattleShips.Core.GameEntities.DifficultyLevels.Abstract;
 
@@ -10,6 +9,6 @@ namespace BattleShips.GameRepository
         IGame GetGame(Guid id);
         IGame CreateGame(IShip[] playerShips, IDifficultyLevel difficulty);
         IGame UpdateGame(Guid id, IGame game);
-        void DeleteGame(Guid id);
+        bool DeleteGame(Guid id);
     }
 }

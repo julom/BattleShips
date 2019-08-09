@@ -6,6 +6,6 @@ namespace BattleShips.Core.GameEntities.Utils.Abstract
     public interface IShipPositionsRandomizer
     {
         IShip[] RandomizeShipsPositions();
-        bool VectorsOverlapsShip(IShip ship, VectorLayout vectors);
+        bool VectorsOverlapsShip(IShip ship, ShipLayout vectors);
     }
 }

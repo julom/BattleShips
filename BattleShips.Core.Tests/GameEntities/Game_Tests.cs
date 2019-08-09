@@ -44,7 +44,7 @@ namespace BattleShips.Core.Tests.GameEntities
             mockShip = new Mock<IShip>();
 
             mockShip.Setup(x => x.Size).Returns(2);
-            mockBoardFactory.Setup(x => x.CreateBoard(It.IsAny<IShip[]>())).Returns(mockBoardComputer.Object);
+            mockBoardFactory.Setup(x => x.CreateBoard()).Returns(mockBoardComputer.Object);
             mockBoardFactory.Setup(x => x.CreateBoard(It.IsNotNull<IShip[]>())).Returns(mockBoardPlayer.Object);
 
             mockBoardPlayer.Name = nameof(mockBoardPlayer);

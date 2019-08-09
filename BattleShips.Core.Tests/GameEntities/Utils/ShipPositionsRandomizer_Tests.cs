@@ -1,5 +1,6 @@
 ﻿using BattleShips.Core.GameEntities.Factories;
 using BattleShips.Core.GameEntities.Utils;
+using BattleShips.Core.GameEntities.Validators.Abstract;
 using BattleShips.Tests;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
@@ -13,6 +14,7 @@ namespace BattleShips.Core.Tests.GameEntities.Utils
     {
         private readonly IGameSettings _gameSettings;
         private readonly IShipFactory _shipFactory;
+        private readonly IShipsGroupValidator _shipsGroupValidator;
         ShipPositionsRandomizer shipPositionsRandomizer;
 
         public ShipPositionsRandomizer_Tests()
@@ -20,13 +22,14 @@ namespace BattleShips.Core.Tests.GameEntities.Utils
             IServiceProvider serviceProvider = DIContainersTestConfiguration.GetDIServiceProvider();
             _gameSettings = serviceProvider.GetService<IGameSettings>();
             _shipFactory = serviceProvider.GetService<IShipFactory>();
+            _shipsGroupValidator = serviceProvider.GetService<IShipsGroupValidator>();
         }
 
         [Test]
         [Repeat(100)]
         public void RandomizeShipsPositions_ReturnsShipsCountEqualsToGameSettings()
         {
-            shipPositionsRandomizer = new ShipPositionsRandomizer(_gameSettings, _shipFactory);
+            shipPositionsRandomizer = new ShipPositionsRandomizer(_gameSettings, _shipFactory, _shipsGroupValidator);
 
             var ships = shipPositionsRandomizer.RandomizeShipsPositions();
 
@@ -37,7 +40,7 @@ namespace BattleShips.Core.Tests.GameEntities.Utils
         [Repeat(100)]
         public void RandomizeShipsPositions_ReturnsShipsFieldsCountEqualsToGameSettings()
         {
-            shipPositionsRandomizer = new ShipPositionsRandomizer(_gameSettings, _shipFactory);
+            shipPositionsRandomizer = new ShipPositionsRandomizer(_gameSettings, _shipFactory, _shipsGroupValidator);
 
             var ships = shipPositionsRandomizer.RandomizeShipsPositions();
 

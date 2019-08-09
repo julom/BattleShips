@@ -2,6 +2,7 @@
 using BattleShips.Core.GameEntities.Factories;
 using BattleShips.Core.GameEntities.Structs;
 using BattleShips.Core.GameEntities.Utils.Abstract;
+using BattleShips.Core.GameEntities.Validators.Abstract;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,11 +13,13 @@ namespace BattleShips.Core.GameEntities.Utils
     {
         private readonly IGameSettings _gameSettings;
         private readonly IShipFactory _shipFactory;
+        private readonly IShipsGroupValidator _shipsGroupValidator;
 
-        public ShipPositionsRandomizer(IGameSettings gameSettings, IShipFactory shipFactory)
+        public ShipPositionsRandomizer(IGameSettings gameSettings, IShipFactory shipFactory, IShipsGroupValidator shipsGroupValidator)
         {
             _gameSettings = gameSettings;
             _shipFactory = shipFactory;
+            _shipsGroupValidator = shipsGroupValidator;
         }
 
         public IShip[] RandomizeShipsPositions()
@@ -37,7 +40,11 @@ namespace BattleShips.Core.GameEntities.Utils
                 shipsLeft.Remove(currentShipSize);
             }
 
-            return addedShipPositions.ToArray();
+            var resultShips = addedShipPositions.ToArray();
+
+            _shipsGroupValidator.ValidateShips(resultShips);
+
+            return resultShips;
         }
 
         private List<IShip> GetPossibleShipPositions(IList<IShip> addedShipPositions, int currentShipSize)
@@ -51,7 +58,7 @@ namespace BattleShips.Core.GameEntities.Utils
             {
                 for (int col = 0; col < _gameSettings.BoardSizeY; col++)
                 {
-                    var vectorVerticalLayout = new VectorLayout(new ShipVector(row, row + vectorDifference), new ShipVector(col, col));
+                    var vectorVerticalLayout = new ShipLayout(new ShipVector(row, row + vectorDifference), new ShipVector(col, col));
                     if (!addedShipPositions.Any(x => VectorsOverlapsShip(x, vectorVerticalLayout)))
                     {
                         possiblePositions.Add(_shipFactory.Create(vectorVerticalLayout.VectorX, vectorVerticalLayout.VectorY));
@@ -64,7 +71,7 @@ namespace BattleShips.Core.GameEntities.Utils
             {
                 for (int col = 0; col < _gameSettings.BoardSizeY - vectorDifference; col++)
                 {
-                    var vectorHorizontalLayout = new VectorLayout(new ShipVector(row, row), new ShipVector(col, col + vectorDifference));
+                    var vectorHorizontalLayout = new ShipLayout(new ShipVector(row, row), new ShipVector(col, col + vectorDifference));
                     if (!addedShipPositions.Any(x => VectorsOverlapsShip(x, vectorHorizontalLayout)))
                     {
                         possiblePositions.Add(_shipFactory.Create(vectorHorizontalLayout.VectorX, vectorHorizontalLayout.VectorY));
@@ -75,7 +82,7 @@ namespace BattleShips.Core.GameEntities.Utils
             return possiblePositions;
         }
 
-        public bool VectorsOverlapsShip(IShip ship, VectorLayout vectors)
+        public bool VectorsOverlapsShip(IShip ship, ShipLayout vectors)
         {
             return
                 ship.Coordinates.Any(x => vectors.Values.Any(val => val.Equals(x.Position)));

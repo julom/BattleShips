@@ -1,4 +1,5 @@
-﻿using BattleShips.Core.GameEntities.Factories;
+﻿using BattleShips.Core;
+using BattleShips.Core.GameEntities.Factories;
 using BattleShips.Core.GameEntities.Utils;
 using BattleShips.Core.GameEntities.Utils.Abstract;
 using BattleShips.Core.GameEntities.Validators;
@@ -18,6 +19,7 @@ namespace BattleShips.Tests
             services.AddTransient<IShipCoordinatesValidator, ShipCoordinatesValidator>();
             services.AddTransient<IShipVectorsValidator, ShipVectorsValidator>();
             services.AddTransient<IShipPositionsRandomizer, ShipPositionsRandomizer>();
+            services.AddTransient<IShipsGroupValidator, ShipsGroupValidator>();
             var serviceProvider = services.BuildServiceProvider();
             return serviceProvider;
         }

@@ -8,7 +8,6 @@ namespace BattleShips.Core.GameEntities.Abstract
         IField[,] Fields { get; }
         bool AreAllShipsSunk { get; }
 
-        IShip[] DefineShipsPositions(bool[,] fields);
         ShootResultDTO Shoot(int positionX, int positionY);
     }
 }

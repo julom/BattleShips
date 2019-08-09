@@ -1,18 +1,17 @@
 ﻿using BattleShips.Core.Exceptions;
 using BattleShips.Core.GameEntities.Abstract;
 using BattleShips.Core.GameEntities.Enums;
-using System.Collections.Generic;
 using System.Linq;
-using BattleShips.Core.GameEntities.Factories;
 using BattleShips.Core.GameEntities.Utils.Abstract;
+using BattleShips.Core.GameEntities.Validators.Abstract;
 
 namespace BattleShips.Core.GameEntities
 {
     public class Board : IBoard
     {
         private readonly IGameSettings _gameSettings;
-        private readonly IShipFactory _shipFactory;
         private readonly IShipPositionsRandomizer _shipPositionsRandomizer;
+        private readonly IShipsGroupValidator _shipsGroupValidator;
 
         public IShip[] Ships { get; private set; }
         public IField[,] Fields { get; private set; }
@@ -24,18 +23,18 @@ namespace BattleShips.Core.GameEntities
             }
         }
 
-        public Board(IShip[] ships, IGameSettings gameSettings, IShipFactory shipFactory)
+        public Board(IShip[] ships, IShipsGroupValidator shipsGroupValidator, IGameSettings gameSettings)
         {
             _gameSettings = gameSettings;
-            _shipFactory = shipFactory;
+            _shipsGroupValidator = shipsGroupValidator;
+            _shipsGroupValidator.ValidateShips(ships);
             Ships = ships;
             Fields = FillTheFields(Ships);
         }
 
-        public Board(IGameSettings gameSettings, IShipFactory shipFactory, IShipPositionsRandomizer shipPositionsRandomizer)
+        public Board(IShipPositionsRandomizer shipPositionsRandomizer, IGameSettings gameSettings)
         {
             _gameSettings = gameSettings;
-            _shipFactory = shipFactory;
             _shipPositionsRandomizer = shipPositionsRandomizer;
             Ships = _shipPositionsRandomizer.RandomizeShipsPositions();
             Fields = FillTheFields(Ships);
@@ -66,63 +65,7 @@ namespace BattleShips.Core.GameEntities
             
             return outputFields;
         }
-
-        public IShip[] DefineShipsPositions(bool[,] fields)
-        {
-            var ships = new List<IShip>();
-            var shipsFields = new List<List<KeyValuePair<int, int>>>(_gameSettings.ShipSizes.Count);
-
-            for (int row = 0; row < fields.GetLength(1); row++)
-            {
-                for (int col = 0; col < fields.GetLength(0); col++)
-                {
-                    if (fields[row, col])
-                    {
-                        var shipField = new KeyValuePair<int, int>(row, col);
-                        var matchedShip = shipsFields.FirstOrDefault(ship => ship != null && CheckIfFieldBelongsToShip(shipField, ship));
-                        if (matchedShip != null)
-                        {
-                            matchedShip.Add(shipField);
-                        }
-                        else
-                        {
-                            shipsFields.Add(new List<KeyValuePair<int, int>>() { shipField });
-                        }
-                    }
-                }
-            }
-
-            if (shipsFields.Count != _gameSettings.ShipSizes.Count)
-            {
-                throw new GameArgumentException("Ship count not matched with game settings");
-            }
-
-            if (fields.Cast<bool>().Count(x => x) != _gameSettings.ShipSizes.Sum())
-            {
-                throw new GameArgumentException("Ship segment count not matched with game settings");
-            }
-
-            foreach (var shipFields in shipsFields)
-            {
-                var ship = _shipFactory.Create(shipFields);
-                ships.Add(ship);
-            }            
-
-            return ships.ToArray();
-        }
-
-        private bool CheckIfFieldBelongsToShip(KeyValuePair<int, int> field, IList<KeyValuePair<int, int>> shipFields)
-        {
-            if (shipFields == null) return false;
-
-            if (shipFields.Any(x => x.Key + 1 == field.Key && x.Value == field.Value || 
-                                    x.Value + 1 == field.Value && x.Key == field.Key))
-            {
-                return true;
-            }
-            return false;
-        }
-
+        
         public ShootResultDTO Shoot(int positionX, int positionY)
         {
             ShootResultDTO result = new ShootResultDTO() { PositionX = positionX, PositionY = positionY};

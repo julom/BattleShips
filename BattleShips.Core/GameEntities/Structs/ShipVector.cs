@@ -1,13 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace BattleShips.Core.GameEntities.Structs
 {
     public struct ShipVector
     {
-        public int From { get; set; }
-        public int To { get; set; }
-        public int Size { get { return Values.Count(); } }
+        public int From { get; }
+        public int To { get; }
+        public int Size => Values.Count();
         public IEnumerable<int> Values
         {
             get
@@ -21,8 +22,8 @@ namespace BattleShips.Core.GameEntities.Structs
 
         public ShipVector(int from, int to)
         {
-            From = from;
-            To = to;
+            From = Math.Min(from, to);
+            To = Math.Max(from, to);
         }
     }
 }

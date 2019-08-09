@@ -6,5 +6,6 @@ namespace BattleShips.Core.GameEntities.Factories.Abstract
     public interface IBoardFactory
     {
         IBoard CreateBoard(IShip[] ships = null);
+        IBoard CreateBoard();
     }
 }

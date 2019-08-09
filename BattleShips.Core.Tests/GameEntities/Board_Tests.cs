@@ -1,13 +1,13 @@
-﻿using BattleShips.Core.GameEntities;
+﻿using Moq;
+using System;
+using BattleShips.Core.GameEntities;
 using BattleShips.Core.GameEntities.Enums;
 using NUnit.Framework;
 using System.Collections.Generic;
-using BattleShips.Core.GameEntities.Factories;
 using Microsoft.Extensions.DependencyInjection;
 using BattleShips.Core.GameEntities.Utils.Abstract;
-using System;
 using BattleShips.Core.GameEntities.Abstract;
-using Moq;
+using BattleShips.Core.GameEntities.Validators.Abstract;
 using BattleShips.Tests;
 
 namespace BattleShips.Core.Tests.GameEntities
@@ -16,8 +16,8 @@ namespace BattleShips.Core.Tests.GameEntities
     public class Board_Tests
     {
         private static readonly IGameSettings _gameSettings;
-        private static readonly IShipFactory _shipFactory;
         private static readonly IShipPositionsRandomizer _shipPositionsRandomizer;
+        private static readonly IShipsGroupValidator _shipsGroupValidator;
         Board board;
         Mock<IShip> _mockShip;
 
@@ -25,8 +25,8 @@ namespace BattleShips.Core.Tests.GameEntities
         {
             IServiceProvider serviceProvider = DIContainersTestConfiguration.GetDIServiceProvider();
             _gameSettings = serviceProvider.GetService<IGameSettings>();
-            _shipFactory = serviceProvider.GetService<IShipFactory>();
             _shipPositionsRandomizer = serviceProvider.GetService<IShipPositionsRandomizer>();
+            _shipsGroupValidator = serviceProvider.GetService<IShipsGroupValidator>();
         }
 
         public static IEnumerable<TestCaseData> ShipsCoordinates()
@@ -57,7 +57,7 @@ namespace BattleShips.Core.Tests.GameEntities
         public void Board_PopulatesPlayerFields(IList<IField> fields)
         {
             _mockShip.Setup(x => x.Coordinates).Returns(fields);
-            board = new Board(new IShip[] { _mockShip.Object }, _gameSettings, _shipFactory);
+            board = new Board(new IShip[] { _mockShip.Object }, _shipsGroupValidator, _gameSettings);
 
             Assert.IsNotNull(board.Fields);
             Assert.IsNotEmpty(board.Fields);
@@ -66,7 +66,7 @@ namespace BattleShips.Core.Tests.GameEntities
         [Test]
         public void Board_PopulatesComputerFields()
         {
-            board = new Board(_gameSettings, _shipFactory, _shipPositionsRandomizer);
+            board = new Board(_shipPositionsRandomizer, _gameSettings);
 
             Assert.IsNotNull(board.Fields);
             Assert.IsNotEmpty(board.Fields);
@@ -79,7 +79,7 @@ namespace BattleShips.Core.Tests.GameEntities
             _mockShip.Setup(x => x.Coordinates).Returns(fields);
             _mockShip.Setup(x => x.TryToShoot(It.IsAny<int>(), It.IsAny<int>())).Returns(true);
             _mockShip.Setup(x => x.IsSunk).Returns(true);
-            board = new Board(new IShip[] { _mockShip.Object }, _gameSettings, _shipFactory);
+            board = new Board(new IShip[] { _mockShip.Object }, _shipsGroupValidator, _gameSettings);
 
             board.Shoot(1, 1);
             board.Shoot(1, 2);
@@ -96,7 +96,7 @@ namespace BattleShips.Core.Tests.GameEntities
             _mockShip.Setup(x => x.Coordinates).Returns(fields);
             _mockShip.Setup(x => x.TryToShoot(It.IsAny<int>(), It.IsAny<int>())).Returns(true);
             _mockShip.Setup(x => x.IsSunk).Returns(false);
-            board = new Board(new IShip[] { _mockShip.Object }, _gameSettings, _shipFactory);
+            board = new Board(new IShip[] { _mockShip.Object }, _shipsGroupValidator, _gameSettings);
 
             board.Shoot(1, 1);
 
@@ -109,7 +109,7 @@ namespace BattleShips.Core.Tests.GameEntities
         {
             _mockShip.Setup(x => x.Coordinates).Returns(fields);
             _mockShip.Setup(x => x.TryToShoot(It.IsAny<int>(), It.IsAny<int>())).Returns(true);
-            board = new Board(new IShip[] { _mockShip.Object }, _gameSettings, _shipFactory);
+            board = new Board(new IShip[] { _mockShip.Object }, _shipsGroupValidator, _gameSettings);
             var positionX = 1;
             var positionY = 1;
 
@@ -124,7 +124,7 @@ namespace BattleShips.Core.Tests.GameEntities
         {
             _mockShip.Setup(x => x.Coordinates).Returns(fields);
             _mockShip.Setup(x => x.TryToShoot(It.IsAny<int>(), It.IsAny<int>())).Returns(false);
-            board = new Board(new IShip[] { _mockShip.Object }, _gameSettings, _shipFactory);
+            board = new Board(new IShip[] { _mockShip.Object }, _shipsGroupValidator, _gameSettings);
             var positionX = 0;
             var positionY = 0;
 

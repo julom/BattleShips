@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using BattleShips.Core;
+using BattleShips.Core.Exceptions;
 using BattleShips.Core.GameEntities.Abstract;
 using BattleShips.Core.GameEntities.DifficultyLevels.Abstract;
 using BattleShips.Core.GameEntities.Factories;
@@ -27,12 +28,12 @@ namespace BattleShips.Web.Services
             _shipFactory = shipFactory;
         }
 
-        public bool[] TryShipPositioning(IList<KeyValuePair<ShipVector, ShipVector>> shipsVectors)
+        public bool[] TryShipPositioning(IList<ShipLayout> shipsLayouts)
         {
             var allShipsFields = new List<IField>();
-            foreach (var vector in shipsVectors)
+            foreach (var layout in shipsLayouts)
             {
-                var ship = _shipFactory.Create(vector.Key, vector.Value);
+                var ship = _shipFactory.Create(layout.VectorX, layout.VectorY);
                 allShipsFields.AddRange(ship.Coordinates);
             }
 
@@ -48,12 +49,12 @@ namespace BattleShips.Web.Services
             return shipPositions;
         }
 
-        public IGame InitializeGame(IList<KeyValuePair<ShipVector, ShipVector>> shipsVectors, IDifficultyLevel difficultyLevel)
+        public IGame InitializeGame(IList<ShipLayout> shipsLayouts, IDifficultyLevel difficultyLevel)
         {
             var shipPositions = new List<IShip>();
-            foreach (var vector in shipsVectors)
+            foreach (var layout in shipsLayouts)
             {
-                var ship = _shipFactory.Create(vector.Key, vector.Value);
+                var ship = _shipFactory.Create(layout.VectorX, layout.VectorY);
                 shipPositions.Add(ship);
             }
 
@@ -61,10 +62,22 @@ namespace BattleShips.Web.Services
             return CurrentGame;
         }
 
+        public bool RemoveGame()
+        {
+            if (CurrentGameGuid.HasValue)
+            {
+                return _gameRepository.DeleteGame(CurrentGameGuid.Value);
+            }
+            return false;
+        }
+
         public IList<string> TakeNextRound(int shootPositionX, int shootPositionY, Guid gameGuid)
         {
             var currentGameStatus = new List<string>();
             CurrentGame = _gameRepository.GetGame(gameGuid);
+
+            if (CurrentGame == null)
+                throw new GameException("Game not available. Please start a new game");
 
             var playerResult = CurrentGame.MakePlayerMovement(shootPositionX, shootPositionY);
             UpdateGameStatus(currentGameStatus, "You", playerResult, CurrentGame);
@@ -84,7 +97,10 @@ namespace BattleShips.Web.Services
         {
             if (gameStatusList == null) gameStatusList = new List<string>();
 
-            gameStatusList.Add($"{person} shot position ({shootResult.PositionX},{shootResult.PositionY})");
+            var shotCoordinate = new Coordinate(shootResult.PositionX, shootResult.PositionY);
+            var boardShotPosition = Coordinate.GetBoardPosition(shotCoordinate);
+
+            gameStatusList.Add($"{person} shot position ({boardShotPosition})");
             gameStatusList.Add(shootResult.IsShipHit ? "Hit!" : "Missed");
 
             if (shootResult.IsShipSunk)
