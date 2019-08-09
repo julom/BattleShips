@@ -6,7 +6,7 @@ using BattleShips.Core.GameEntities.Validators.Abstract;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 
-namespace BattleShips.Core.Tests
+namespace BattleShips.Tests
 {
     static class DIContainersTestConfiguration
     {

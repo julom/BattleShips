@@ -5,6 +5,7 @@ using NUnit.Framework;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
+using BattleShips.Tests;
 
 namespace BattleShips.Core.Tests.GameEntities
 {

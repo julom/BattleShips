@@ -8,6 +8,7 @@ using BattleShips.Core.GameEntities.Utils.Abstract;
 using System;
 using BattleShips.Core.GameEntities.Abstract;
 using Moq;
+using BattleShips.Tests;
 
 namespace BattleShips.Core.Tests.GameEntities
 {

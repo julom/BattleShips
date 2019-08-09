@@ -1,5 +1,6 @@
 ﻿using BattleShips.Core.GameEntities.Factories;
 using BattleShips.Core.GameEntities.Utils;
+using BattleShips.Tests;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using System;

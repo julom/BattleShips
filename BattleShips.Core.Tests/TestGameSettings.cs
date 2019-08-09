@@ -1,6 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using BattleShips.Core;
+using System.Collections.Generic;
 
-namespace BattleShips.Core.Tests
+namespace BattleShips.Tests
 {
     class TestGameSettings : IGameSettings
     {

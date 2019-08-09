@@ -8,6 +8,7 @@ using System.Linq;
 using BattleShips.Core.GameEntities.Factories;
 using BattleShips.Core.GameEntities.Validators.Abstract;
 using Microsoft.Extensions.DependencyInjection;
+using BattleShips.Tests;
 
 namespace BattleShips.Core.Tests.GameEntities
 {
