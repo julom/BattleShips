@@ -2,7 +2,7 @@
 
 namespace BattleShips.Core.GameEntities.Structs
 {
-    public struct VectorLayout
+    public struct ShipLayout
     {
         public ShipVector VectorX { get; }
         public ShipVector VectorY { get; }
@@ -20,13 +20,13 @@ namespace BattleShips.Core.GameEntities.Structs
             }
         }
 
-        public VectorLayout(ShipVector vectorX, ShipVector vectorY)
+        public ShipLayout(ShipVector vectorX, ShipVector vectorY)
         {
             VectorX = vectorX;
             VectorY = vectorY;
         }
 
-        public VectorLayout(int fromX, int toX, int fromY, int toY)
+        public ShipLayout(int fromX, int toX, int fromY, int toY)
         {
             VectorX = new ShipVector(fromX, toX);
             VectorY = new ShipVector(fromY, toY);
