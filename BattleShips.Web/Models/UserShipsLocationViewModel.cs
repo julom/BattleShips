@@ -33,20 +33,12 @@ namespace BattleShips.Web.Models
             {
                 foreach (var shipCoordinate in shipsUserCoordinates)
                 {
-                    try
+                    var numericalCoordinateFrom = shipCoordinate.Key.NumericalCoordinate;
+                    var numericalCoordinateTo = shipCoordinate.Value.NumericalCoordinate;
+                    if (numericalCoordinateFrom.HasValue && numericalCoordinateTo.HasValue)
                     {
-                        var numericalCoordinateFrom = shipCoordinate.Key.NumericalCoordinate;
-                        var numericalCoordinateTo = shipCoordinate.Value.NumericalCoordinate;
-                        if (numericalCoordinateFrom.HasValue && numericalCoordinateTo.HasValue)
-                        {
-                            var shipVectorX = new ShipVector(numericalCoordinateFrom.Value.PositionX, numericalCoordinateTo.Value.PositionX);
-                            var shipVectorY = new ShipVector(numericalCoordinateFrom.Value.PositionY, numericalCoordinateTo.Value.PositionY);
-                            shipLayouts.Add(new ShipLayout(shipVectorX, shipVectorY));
-                        }
-                    }
-                    catch (Exception e)
-                    {
-
+                        var shipLayout = new ShipLayout(numericalCoordinateFrom.Value, numericalCoordinateTo.Value);
+                        shipLayouts.Add(shipLayout);
                     }
                 }
             }
