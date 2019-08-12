@@ -18,10 +18,8 @@ namespace BattleShips.Web.Controllers
         }
 
         [HttpGet]
-        public IActionResult Index()
+        public IActionResult Index(GameModel gameModel)
         {
-            var gameModel = new GameModel();
-
             if (TempData[nameof(UserCommunicationViewModel.MessageToUser)] is string message)
             {
                 gameModel.UserCommunicationVM.MessageToUser.Add(message);
