@@ -23,6 +23,7 @@ namespace BattleShips.Web
 
             services.AddTransient<IShipFactory, ShipFactory>();
             services.AddTransient<IBoardFactory, BoardFactory>();
+            services.AddTransient<IGameFactory, GameFactory>();
             services.AddTransient<IShipPositionsRandomizer, ShipPositionsRandomizer>();
             services.AddTransient<IShipCoordinatesValidator, ShipCoordinatesValidator>();
             services.AddTransient<IShipVectorsValidator, ShipVectorsValidator>();
