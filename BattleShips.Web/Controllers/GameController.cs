@@ -10,6 +10,7 @@ namespace BattleShips.Web.Controllers
 {
     public class GameController : Controller
     {
+        private const string WarningGameRestarted = "Game needed to be restarted. Please start again";
         private readonly IServiceProvider _serviceProvider;
 
         public GameController(IServiceProvider serviceProvider)
@@ -48,8 +49,7 @@ namespace BattleShips.Web.Controllers
                 TempData[nameof(UserCommunicationViewModel.MessageToUser)] = "Error: " + e.Message;
             }
 
-            var serializedVm = JsonConvert.SerializeObject(userShipsLocationVM);
-            TempData[nameof(UserShipsLocationViewModel)] = serializedVm;
+            TempData.AddSerializedObject(userShipsLocationVM, nameof(UserShipsLocationViewModel));
 
             return RedirectToAction(nameof(Index));
         }
@@ -62,7 +62,7 @@ namespace BattleShips.Web.Controllers
             ModelState.MarkFieldSkipped(nameof(GameModel.GameGuid));
             if (!ModelState.IsValid)
             {
-                TempData[nameof(UserCommunicationViewModel.MessageToUser)] = "Game needed to be restarted. Please start again";
+                TempData[nameof(UserCommunicationViewModel.MessageToUser)] = WarningGameRestarted;
                 return View(nameof(Index), gameModel);
             }
 
@@ -81,12 +81,10 @@ namespace BattleShips.Web.Controllers
                     gameService.RemoveGame(gameModel.GameGuid);
 
                 TempData[nameof(UserCommunicationViewModel.MessageToUser)] = "Error: " + e.Message;
+                TempData.AddSerializedObject(userShipsLocationVM, nameof(UserShipsLocationViewModel));
 
-                var serializedVm = JsonConvert.SerializeObject(userShipsLocationVM);
-                TempData[nameof(UserShipsLocationViewModel)] = serializedVm;
+                return RedirectToAction(nameof(Index));
             }
-
-            return RedirectToAction(nameof(Index));
         }
 
         [HttpPost]
@@ -113,7 +111,7 @@ namespace BattleShips.Web.Controllers
             }
             else
             {
-                TempData[nameof(UserCommunicationViewModel.MessageToUser)] = "Game needed to be restarted. Please start again";
+                TempData[nameof(UserCommunicationViewModel.MessageToUser)] = WarningGameRestarted;
             }
 
             return RedirectToAction(nameof(Index));
