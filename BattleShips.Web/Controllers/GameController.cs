@@ -5,6 +5,7 @@ using BattleShips.Web.Services.Abstract;
 using BattleShips.Core.GameEntities.DifficultyLevels;
 using System;
 using Newtonsoft.Json;
+using Microsoft.Extensions.Logging;
 
 namespace BattleShips.Web.Controllers
 {
@@ -12,10 +13,12 @@ namespace BattleShips.Web.Controllers
     {
         private const string WarningGameRestarted = "Game needed to be restarted. Please start again";
         private readonly IServiceProvider _serviceProvider;
+        private readonly ILogger _logger;
 
-        public GameController(IServiceProvider serviceProvider)
+        public GameController(IServiceProvider serviceProvider, ILogger<GameController> logger)
         {
             _serviceProvider = serviceProvider;
+            _logger = logger;
         }
 
         [HttpGet]
@@ -46,6 +49,7 @@ namespace BattleShips.Web.Controllers
             }
             catch(Exception e)
             {
+                _logger.LogError(e, $"General error in {nameof(CheckShips)} method");
                 TempData[nameof(UserCommunicationViewModel.MessageToUser)] = "Error: " + e.Message;
             }
 
@@ -62,6 +66,7 @@ namespace BattleShips.Web.Controllers
             ModelState.MarkFieldSkipped(nameof(GameModel.GameGuid));
             if (!ModelState.IsValid)
             {
+                _logger.LogError($"Model was not validated in {nameof(Create)} method");
                 TempData[nameof(UserCommunicationViewModel.MessageToUser)] = WarningGameRestarted;
                 return View(nameof(Index), gameModel);
             }
@@ -77,6 +82,8 @@ namespace BattleShips.Web.Controllers
             }
             catch (Exception e)
             {
+                _logger.LogError(e, $"General error in {nameof(Create)} method");
+
                 if (gameService != null)
                     gameService.RemoveGame(gameModel.GameGuid);
 
@@ -106,11 +113,13 @@ namespace BattleShips.Web.Controllers
                 }
                 catch (Exception e)
                 {
+                    _logger.LogError(e, $"General error in {nameof(NextTurn)} method");
                     TempData[nameof(UserCommunicationViewModel.MessageToUser)] = "Error: " + e.Message;
                 }
             }
             else
             {
+                _logger.LogError($"Model was not validated in {nameof(NextTurn)} method");
                 TempData[nameof(UserCommunicationViewModel.MessageToUser)] = WarningGameRestarted;
             }
 
