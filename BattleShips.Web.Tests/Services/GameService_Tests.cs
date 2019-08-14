@@ -20,7 +20,7 @@ using System.Linq;
 namespace BattleShips.Web.Tests.Services
 {
     [TestFixture]
-    public class GameServiceTests
+    public class GameService_Tests
     {
 
         IGameSettings _gameSettings;
@@ -31,7 +31,7 @@ namespace BattleShips.Web.Tests.Services
         private Mock<IDifficultyLevel> mockDifficultyLevel;
         private Mock<IGameStatusUpdater> mockGameStatusUpdater;
 
-        public GameServiceTests()
+        public GameService_Tests()
         {
             IServiceProvider serviceProvider = DIContainersTestConfiguration.GetDIServiceProvider();
             _gameSettings = serviceProvider.GetService<IGameSettings>();

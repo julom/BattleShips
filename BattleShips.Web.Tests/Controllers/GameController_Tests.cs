@@ -17,7 +17,7 @@ using System.Linq;
 namespace BattleShips.Web.Tests.Controllers
 {
     [TestFixture]
-    public class GameControllerTests
+    public class GameController_Tests
     {
         private Mock<IServiceProvider> mockServiceProvider;
         private Mock<ILogger<GameController>> mockLogger;

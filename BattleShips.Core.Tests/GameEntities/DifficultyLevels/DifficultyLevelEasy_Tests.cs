@@ -8,7 +8,7 @@ using NUnit.Framework;
 namespace BattleShips.Core.Tests.GameEntities.DifficultyLevels
 {
     [TestFixture]
-    public class DifficultyLevelEasy_Test
+    public class DifficultyLevelEasy_Tests
     {
         DifficultyLevelEasy difficulty;
         Mock<IBoard> mockBoard = new Mock<IBoard>();

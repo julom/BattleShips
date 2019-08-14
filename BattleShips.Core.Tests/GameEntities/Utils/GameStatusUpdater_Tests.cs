@@ -10,7 +10,7 @@ using System.Linq;
 namespace BattleShips.Core.Tests.GameEntities.Utils
 {
     [TestFixture]
-    public class GameStatusUpdaterTests
+    public class GameStatusUpdater_Tests
     {
         Mock<IGame> mockGame;
 

@@ -9,12 +9,12 @@ using BattleShips.Tests;
 namespace BattleShips.Core.Tests.GameEntities
 {
     [TestFixture]
-    public class ShipCoordinatesValidator_Test
+    public class ShipCoordinatesValidator_Tests
     {
         private static readonly IGameSettings _gameSettings;
         ShipCoordinatesValidator validator = new ShipCoordinatesValidator(_gameSettings);
 
-        static ShipCoordinatesValidator_Test()
+        static ShipCoordinatesValidator_Tests()
         {
             var services = new ServiceCollection();
             services.AddScoped<IGameSettings, TestGameSettings>();

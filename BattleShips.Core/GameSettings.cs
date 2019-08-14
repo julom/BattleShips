@@ -9,9 +9,9 @@ namespace BattleShips.Core
         public const int ShipsCountDefault = 3;
         public static readonly int[] ShipSizesDefault = new int[ShipsCountDefault] { 5, 4, 4 };
 
-        public int BoardSizeX { get => BoardSizeXDefault; set{} }
-        public int BoardSizeY { get => BoardSizeYDefault; set{} }
+        public int BoardSizeX { get; set; } = BoardSizeXDefault;
+        public int BoardSizeY { get; set; } = BoardSizeYDefault;
 
-        public IList<int> ShipSizes { get => new List<int>(ShipSizesDefault); set{} }
+        public IList<int> ShipSizes { get; set; } = new List<int>(ShipSizesDefault);
     }
 }

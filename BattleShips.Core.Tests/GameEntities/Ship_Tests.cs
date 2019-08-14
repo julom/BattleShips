@@ -3,7 +3,6 @@ using NUnit.Framework;
 using System.Collections.Generic;
 using System.Linq;
 using BattleShips.Core.Exceptions;
-using BattleShips.Core.GameEntities.Abstract;
 using Moq;
 using BattleShips.Core.Utils;
 using BattleShips.Core.GameEntities.Enums;
@@ -13,7 +12,7 @@ using BattleShips.Core.GameEntities.Structs;
 namespace BattleShips.Core.Tests.GameEntities
 {
     [TestFixture]
-    public class Ship_Test
+    public class Ship_Tests
     {
         public static IEnumerable<TestCaseData> ProperCoordinates()
         {

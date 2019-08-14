@@ -6,7 +6,7 @@ using System;
 namespace BattleShips.Core.Tests.GameEntities.Structs
 {
     [TestFixture]
-    public class Coordinate_Test
+    public class Coordinate_Tests
     {
         [Test, Pairwise]
         public void GetNumericalPosition_HappyPath([Values("a", "A", "z", "Z")] string letter, [Range(1, 30)] int number)
